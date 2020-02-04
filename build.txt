@@ -1,0 +1,3 @@
+displayName = Gender Variety
+author = SheepishShepherd
+version = 0.1

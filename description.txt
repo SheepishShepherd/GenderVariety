@@ -1,0 +1,1 @@
+Most vanilla town NPCs have a 50% chance to spawn as the opposite gender! Configs available to customize outcome.
