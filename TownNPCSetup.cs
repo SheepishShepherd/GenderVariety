@@ -152,6 +152,9 @@ namespace GenderVariety
 
 		// TODO: New appropriate names for our genderswapped friends
 		public string GenerateAltName(int type) {
+			if (type == NPCID.Guide) return TownNPCNames.Guide[Main.rand.Next(TownNPCNames.Guide.Count)];
+			if (type == NPCID.Merchant) return TownNPCNames.Merchant[Main.rand.Next(TownNPCNames.Merchant.Count)];
+
 			return "BOBBY";
 		}
 		

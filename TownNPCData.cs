@@ -116,4 +116,32 @@ namespace GenderVariety
 			return new TownNPCData(type, gender, name, altName);
 		}
 	}
+
+	internal class TownNPCNames
+	{
+		// Original names: https://terraria.gamepedia.com/NPC_names
+		// Preferably 12 names for each NPC
+
+		public readonly static List<string> Guide = new List<string>() {
+			"Anne", "Becky", "Connie",
+			"Chloe", "Jill", "Kim",
+			"Nichole", "Sarah", "Taylor",
+		};
+
+		public readonly static List<string> Merchant = new List<string>() {
+			"Wilma",
+		};
+
+		public readonly static List<string> Nurse = new List<string>() {
+			"Kaleb", "Keith", "Kenneth", "Justin", "Owen?", "Xander",
+		};
+		
+		public readonly static List<string> Dryad = new List<string>() {
+			"Basil",
+		};
+		
+		public readonly static List<string> Painter = new List<string>() {
+			"Agnese", "Beatrice", "Carla", "Gabriella", "Lucia", "Noemie?", "Rachele", "Ruth?", "Vittoria",
+		};
+	}
 }
