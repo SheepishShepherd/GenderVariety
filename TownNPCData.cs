@@ -127,21 +127,59 @@ namespace GenderVariety
 			"Chloe", "Jill", "Kim",
 			"Nichole", "Sarah", "Taylor",
 		};
-
+		public readonly static List<string> Tinkerer = new List<string>() {
+			""
+		};
 		public readonly static List<string> Merchant = new List<string>() {
-			"Wilma",
+			"Wilma", "Margaret", 
 		};
-
+		public readonly static List<string> DyeTrader = new List<string>() {
+			"Delma", "Hijeb", ""
+		};
 		public readonly static List<string> Nurse = new List<string>() {
-			"Kaleb", "Keith", "Kenneth", "Justin", "Owen?", "Xander",
+			"Kaleb", "Keith", "Kenneth", "Justin", "Owen", "Xander",
 		};
-		
+		public readonly static List<string> Demolitionist = new List<string>() {
+			""
+		};
+		public readonly static List<string> Clothier = new List<string>() {
+			""
+		};
+		public readonly static List<string> Mechanic = new List<string>() {
+			""
+		};
+		public readonly static List<string> PartyGirl = new List<string>() {
+			""
+		};
 		public readonly static List<string> Dryad = new List<string>() {
-			"Basil",
+			"Basil", "Cassia", "Jasmine", "Rose",
 		};
-		
+		public readonly static List<string> Angler = new List<string>() {
+			""
+		};
 		public readonly static List<string> Painter = new List<string>() {
-			"Agnese", "Beatrice", "Carla", "Gabriella", "Lucia", "Noemie?", "Rachele", "Ruth?", "Vittoria",
+			"Agnese", "Beatrice", "Carla", "Gabriella", "Lucia", "Noemie", "Rachele", "Ruth?", "Vittoria", "Violet", "Vivia", "Lilica",
+		};
+		public readonly static List<string> Stylist = new List<string>() {
+			"Rogue", 
+		};
+		public readonly static List<string> Pirate = new List<string>() {
+			""
+		};
+		public readonly static List<string> Cyborg = new List<string>() {
+			""
+		};
+		public readonly static List<string> Steampunker = new List<string>() {
+			"Braiden", "Ronspierre", "Delroi", "Johnathan", "Smith"
+		};
+		public readonly static List<string> Truffle = new List<string>() {
+			"Zedoary", "Cress", "Xelther",
+		};
+		public readonly static List<string> WitchDoctor = new List<string>() {
+			""
+		};
+		public readonly static List<string> Wizard = new List<string>() {
+			""
 		};
 	}
 }
