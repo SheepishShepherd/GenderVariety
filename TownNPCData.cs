@@ -123,62 +123,63 @@ namespace GenderVariety
 		// Preferably 12 names for each NPC
 
 		public readonly static List<string> Guide = new List<string>() {
-			"Anne", "Becky", "Connie",
-			"Chloe", "Jill", "Kim",
+			"Anne", "Becky", "Connie", "Chloe", "Jill", "Kim",
 			"Nichole", "Sarah", "Taylor",
 		};
-		public readonly static List<string> Tinkerer = new List<string>() {
-			""
-		};
 		public readonly static List<string> Merchant = new List<string>() {
-			"Wilma", "Margaret", 
+			"Deborah", "Gilda", "Gloria", "Harriet", "Ingrid", "Margaret",
+			"Mavis", "Wilma",
+		};
+		public readonly static List<string> Nurse = new List<string>() {
+			"Justin", "Kaleb", "Keith", "Kenneth", "Owen", "Xander",
+		};
+		public readonly static List<string> Painter = new List<string>() {
+			"Agnese", "Beatrice", "Carla", "Gabriella", "Lilica", "Lucia",
+			"Noemie", "Rachele", "Ruth", "Vittoria", "Violet", "Vivia",
 		};
 		public readonly static List<string> DyeTrader = new List<string>() {
 			"Delma", "Hijeb", ""
 		};
-		public readonly static List<string> Nurse = new List<string>() {
-			"Kaleb", "Keith", "Kenneth", "Justin", "Owen", "Xander",
-		};
 		public readonly static List<string> Demolitionist = new List<string>() {
+			""
+		};
+		public readonly static List<string> Dryad = new List<string>() {
+			"Basil",
+		};
+		public readonly static List<string> ArmsDealer = new List<string>() {
+			""
+		};
+		public readonly static List<string> PartyGirl = new List<string>() {
+			""
+		};
+		public readonly static List<string> Stylist = new List<string>() {
+			"Rogue",
+		};
+		public readonly static List<string> Angler = new List<string>() {
+			""
+		};
+		public readonly static List<string> GoblinTinkerer = new List<string>() {
 			""
 		};
 		public readonly static List<string> Clothier = new List<string>() {
 			""
 		};
 		public readonly static List<string> Mechanic = new List<string>() {
-			""
-		};
-		public readonly static List<string> PartyGirl = new List<string>() {
-			""
-		};
-		public readonly static List<string> Dryad = new List<string>() {
-			"Basil", "Cassia", "Jasmine", "Rose",
-		};
-		public readonly static List<string> Angler = new List<string>() {
-			""
-		};
-		public readonly static List<string> Painter = new List<string>() {
-			"Agnese", "Beatrice", "Carla", "Gabriella", "Lucia", "Noemie", "Rachele", "Ruth?", "Vittoria", "Violet", "Vivia", "Lilica",
-		};
-		public readonly static List<string> Stylist = new List<string>() {
-			"Rogue", 
+			"Butch", 
 		};
 		public readonly static List<string> Pirate = new List<string>() {
 			""
 		};
-		public readonly static List<string> Cyborg = new List<string>() {
+		public readonly static List<string> Truffle = new List<string>() {
+			"Cress", "Xelther", "Zedoary",
+		};
+		public readonly static List<string> Wizard = new List<string>() {
 			""
 		};
 		public readonly static List<string> Steampunker = new List<string>() {
-			"Braiden", "Ronspierre", "Delroi", "Johnathan", "Smith"
+			"Braiden", "Delroi", "Johnathan", "Ronspierre", "Smith"
 		};
-		public readonly static List<string> Truffle = new List<string>() {
-			"Zedoary", "Cress", "Xelther",
-		};
-		public readonly static List<string> WitchDoctor = new List<string>() {
-			""
-		};
-		public readonly static List<string> Wizard = new List<string>() {
+		public readonly static List<string> Cyborg = new List<string>() {
 			""
 		};
 	}

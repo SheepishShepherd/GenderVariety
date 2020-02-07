@@ -154,7 +154,23 @@ namespace GenderVariety
 		public string GenerateAltName(int type) {
 			if (type == NPCID.Guide) return TownNPCNames.Guide[Main.rand.Next(TownNPCNames.Guide.Count)];
 			if (type == NPCID.Merchant) return TownNPCNames.Merchant[Main.rand.Next(TownNPCNames.Merchant.Count)];
-
+			if (type == NPCID.Nurse) return TownNPCNames.Nurse[Main.rand.Next(TownNPCNames.Nurse.Count)];
+			if (type == NPCID.Demolitionist) return TownNPCNames.Demolitionist[Main.rand.Next(TownNPCNames.Demolitionist.Count)];
+			if (type == NPCID.DyeTrader) return TownNPCNames.DyeTrader[Main.rand.Next(TownNPCNames.DyeTrader.Count)];
+			if (type == NPCID.Dryad) return TownNPCNames.Merchant[Main.rand.Next(TownNPCNames.Dryad.Count)];
+			if (type == NPCID.ArmsDealer) return TownNPCNames.ArmsDealer[Main.rand.Next(TownNPCNames.ArmsDealer.Count)];
+			if (type == NPCID.Stylist) return TownNPCNames.Stylist[Main.rand.Next(TownNPCNames.Stylist.Count)];
+			if (type == NPCID.Painter) return TownNPCNames.Painter[Main.rand.Next(TownNPCNames.Painter.Count)];
+			if (type == NPCID.Angler) return TownNPCNames.Angler[Main.rand.Next(TownNPCNames.Angler.Count)];
+			if (type == NPCID.GoblinTinkerer) return TownNPCNames.GoblinTinkerer[Main.rand.Next(TownNPCNames.GoblinTinkerer.Count)];
+			if (type == NPCID.Clothier) return TownNPCNames.Clothier[Main.rand.Next(TownNPCNames.Clothier.Count)];
+			if (type == NPCID.Mechanic) return TownNPCNames.Mechanic[Main.rand.Next(TownNPCNames.Mechanic.Count)];
+			if (type == NPCID.PartyGirl) return TownNPCNames.PartyGirl[Main.rand.Next(TownNPCNames.PartyGirl.Count)];
+			if (type == NPCID.Wizard) return TownNPCNames.Wizard[Main.rand.Next(TownNPCNames.Wizard.Count)];
+			if (type == NPCID.Truffle) return TownNPCNames.Truffle[Main.rand.Next(TownNPCNames.Truffle.Count)];
+			if (type == NPCID.Pirate) return TownNPCNames.Pirate[Main.rand.Next(TownNPCNames.Pirate.Count)];
+			if (type == NPCID.Steampunker) return TownNPCNames.Steampunker[Main.rand.Next(TownNPCNames.Steampunker.Count)];
+			if (type == NPCID.Cyborg) return TownNPCNames.Cyborg[Main.rand.Next(TownNPCNames.Cyborg.Count)];
 			return "BOBBY";
 		}
 		
