@@ -1,3 +1,4 @@
 displayName = Gender Variety
 author = SheepishShepherd, Planterror
 version = 0.1
+includePDB = true

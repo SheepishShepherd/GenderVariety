@@ -18,8 +18,8 @@ namespace GenderVariety
 		internal Texture2D npcAltTexture;
 		internal Texture2D npcAltTexture_Head;
 
-		internal Texture2D npcPartyTexture;
-		internal Texture2D npcAltPartyTexture;
+		//internal Texture2D npcPartyTexture;
+		//internal Texture2D npcAltPartyTexture;
 
 		TownNPCInfo(int type, int headIndex, bool isMale) {
 			this.type = type;
@@ -141,46 +141,49 @@ namespace GenderVariety
 			"Delma", "Hijeb", ""
 		};
 		public readonly static List<string> Demolitionist = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> Dryad = new List<string>() {
 			"Basil",
 		};
 		public readonly static List<string> ArmsDealer = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> PartyGirl = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> Stylist = new List<string>() {
 			"Rogue",
 		};
 		public readonly static List<string> Angler = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> GoblinTinkerer = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> Clothier = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> Mechanic = new List<string>() {
 			"Butch", 
 		};
 		public readonly static List<string> Pirate = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> Truffle = new List<string>() {
 			"Cress", "Xelther", "Zedoary",
 		};
 		public readonly static List<string> Wizard = new List<string>() {
-			""
+			"Alt"
 		};
 		public readonly static List<string> Steampunker = new List<string>() {
 			"Braiden", "Delroi", "Johnathan", "Ronspierre", "Smith"
 		};
 		public readonly static List<string> Cyborg = new List<string>() {
-			""
+			"Alt"
+		};
+		public readonly static List<string> Claus = new List<string>() {
+			"Mary Claus", "Carol Claus", "Jessica Claus"
 		};
 	}
 }

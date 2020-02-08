@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "GenderVariety": {
+      "commandName": "Executable",
+      "executablePath": "$(tMLPath)",
+      "workingDirectory": "$(TerrariaSteamPath)"
+    }
+  }
+}
