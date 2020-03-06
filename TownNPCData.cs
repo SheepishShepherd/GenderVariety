@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -112,8 +114,73 @@ namespace GenderVariety
 			};
 		}
 
-		internal static TownNPCData AddTownNPC(int type, int gender, string name, string altName) {
-			return new TownNPCData(type, gender, name, altName);
+		// Leave 0 to choose at random/config. Using 1 or 2 sets it to that gender
+		internal static void AssignGender(NPC npc, int setGender = 0) {
+			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
+			if (index == -1) {
+				GenderVariety.SendDebugMessage($"{npc.FullName} is not listed as a gender altering NPC", Color.LightYellow);
+				return;
+			}
+
+			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+			TownNPCData npcData = TownNPCWorld.SavedData[index];
+			// If we aren't setting a gender manually, go through the OnSpawn process
+			if (setGender == GenderVariety.Unassigned) {
+				if (npcData.savedGender != GenderVariety.Unassigned) setGender = npcData.savedGender;
+				else {
+					if (ModContent.GetInstance<GVConfig>().ForcedMale.Any(x => x.Type == npc.type)) setGender = GenderVariety.Male;
+					else if (ModContent.GetInstance<GVConfig>().ForcedFemale.Any(x => x.Type == npc.type)) setGender = GenderVariety.Female;
+					else setGender = Main.rand.NextBool() ? GenderVariety.Male : GenderVariety.Female;
+				}
+			}
+			
+			// Debug Message
+			string oldGender = npcData.savedGender == 0 ? "Unassigned" : npcData.savedGender == 1 ? "Male" : "Female";
+			string newGender = setGender == 0 ? "Unassigned" : setGender == 1 ? "Male" : "Female";
+			GenderVariety.SendDebugMessage($"Changed gender for {npc.type} from {oldGender} to {newGender}", Color.MediumPurple);
+
+			// Update name (texture changes update in PreAI)
+			npcData.savedGender = setGender;
+			npc.GivenName = GenerateAltName(index, npc);
+		}
+
+		internal static string GenerateAltName(int index, NPC npc) {
+			// Location should NEVER be -1 since this method can only be called after a check
+			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+			TownNPCData npcData = TownNPCWorld.SavedData[index];
+
+			// Check saved names first. Saved names are reset on NPC death.
+			if (!TownNPCs.IsAltGender(npc)) {
+				if (npcData.name != "") return npcData.name;
+				else return NPC.getNewNPCName(npc.type);
+			}
+			else {
+				if (npcData.altName != "") return npcData.altName;
+				else {
+					switch (townNPC.type) {
+						case NPCID.Guide: return TownNPCNames.Guide[Main.rand.Next(TownNPCNames.Guide.Count)];
+						case NPCID.Merchant: return TownNPCNames.Merchant[Main.rand.Next(TownNPCNames.Merchant.Count)];
+						case NPCID.Nurse: return TownNPCNames.Nurse[Main.rand.Next(TownNPCNames.Nurse.Count)];
+						case NPCID.Demolitionist: return TownNPCNames.Demolitionist[Main.rand.Next(TownNPCNames.Demolitionist.Count)];
+						case NPCID.DyeTrader: return TownNPCNames.DyeTrader[Main.rand.Next(TownNPCNames.DyeTrader.Count)];
+						case NPCID.Dryad: return TownNPCNames.Merchant[Main.rand.Next(TownNPCNames.Dryad.Count)];
+						case NPCID.ArmsDealer: return TownNPCNames.ArmsDealer[Main.rand.Next(TownNPCNames.ArmsDealer.Count)];
+						case NPCID.Stylist: return TownNPCNames.Stylist[Main.rand.Next(TownNPCNames.Stylist.Count)];
+						case NPCID.Painter: return TownNPCNames.Painter[Main.rand.Next(TownNPCNames.Painter.Count)];
+						case NPCID.Angler: return TownNPCNames.Angler[Main.rand.Next(TownNPCNames.Angler.Count)];
+						case NPCID.GoblinTinkerer: return TownNPCNames.GoblinTinkerer[Main.rand.Next(TownNPCNames.GoblinTinkerer.Count)];
+						case NPCID.Clothier: return TownNPCNames.Clothier[Main.rand.Next(TownNPCNames.Clothier.Count)];
+						case NPCID.Mechanic: return TownNPCNames.Mechanic[Main.rand.Next(TownNPCNames.Mechanic.Count)];
+						case NPCID.PartyGirl: return TownNPCNames.PartyGirl[Main.rand.Next(TownNPCNames.PartyGirl.Count)];
+						case NPCID.Wizard: return TownNPCNames.Wizard[Main.rand.Next(TownNPCNames.Wizard.Count)];
+						case NPCID.Truffle: return TownNPCNames.Truffle[Main.rand.Next(TownNPCNames.Truffle.Count)];
+						case NPCID.Pirate: return TownNPCNames.Pirate[Main.rand.Next(TownNPCNames.Pirate.Count)];
+						case NPCID.Steampunker: return TownNPCNames.Steampunker[Main.rand.Next(TownNPCNames.Steampunker.Count)];
+						case NPCID.Cyborg: return TownNPCNames.Cyborg[Main.rand.Next(TownNPCNames.Cyborg.Count)];
+						default: return "";
+					}
+				}
+			}
 		}
 	}
 

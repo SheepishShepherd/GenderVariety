@@ -1,6 +1,8 @@
+using Terraria.ID;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MonoMod.RuntimeDetour.HookGen;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -11,6 +13,10 @@ namespace GenderVariety
 
 	public class GenderVariety : Mod
 	{
+		public const int Unassigned = 0;
+		public const int Male = 1;
+		public const int Female = 2;
+
 		internal static TownNPCSetup townNPCList;
 
 		public GenderVariety() {
@@ -20,6 +26,34 @@ namespace GenderVariety
 		public override void Load() {
 			townNPCList = new TownNPCSetup();
 			IL.Terraria.NPC.NewNPC += NPC_NewNPC;
+			IL_NPC_TypeName += ChangeNPCTypeName;
+		}
+
+		private void ChangeNPCTypeName(ILContext il) {
+			ILCursor c = new ILCursor(il);
+			if (!c.TryGotoNext(i => i.MatchRet())) return;
+			c.Emit(OpCodes.Ldarg_0);
+			c.EmitDelegate<Func<string, NPC, string>>(
+				delegate (string ogValue, NPC npc) {
+					int index = townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
+					if (index == -1) return ogValue;
+					
+					TownNPCData npcData = TownNPCWorld.SavedData[index];
+					if (TownNPCs.IsAltGender(npc)) {
+						if (npc.type == NPCID.PartyGirl) return "Party Boy";
+						else if (npc.type == NPCID.SantaClaus) return "Mrs. Claus";
+					}
+					return ogValue;
+				});
+		}
+
+		public static event ILContext.Manipulator IL_NPC_TypeName {
+			add {
+				HookEndpointManager.Modify(typeof(NPC).GetProperty(nameof(NPC.TypeName)).GetGetMethod(), value);
+			}
+			remove {
+				HookEndpointManager.Unmodify(typeof(NPC).GetProperty(nameof(NPC.TypeName)).GetGetMethod(), value);
+			}
 		}
 
 		private void NPC_NewNPC(ILContext il) {
@@ -44,13 +78,23 @@ namespace GenderVariety
 
 				//Emit delegate action code
 				c.EmitDelegate<Action<int>>(delegate (int num) {
+					NPC npc = Main.npc[num];
 					//Code to insert/inject
-					if (Main.npc[num].GetGlobalNPC<TownNPCs>().altGender) {
-						SendDebugMessage($"setGender = {Main.npc[num].GetGlobalNPC<TownNPCs>().setGender} (altGender = {Main.npc[num].GetGlobalNPC<TownNPCs>().altGender})", Color.LightPink);
-						SendDebugMessage($"Name decided BEFORE change: {Main.npc[num].GivenName}", Color.LightPink);
+					int index = townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
+					if (index == -1) return;
+					
+					TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+					TownNPCData npcData = TownNPCWorld.SavedData[index];
+
+					TownNPCData.AssignGender(npc);
+					/*
+					if (TownNPCs.IsAltGender(Main.npc[num])) {
+						SendDebugMessage($"setGender = {npcData.savedGender} (altGender = {TownNPCs.IsAltGender(Main.npc[num])})", Color.LightPink);
+						string prevName = Main.npc[num].GivenName;
 						Main.npc[num].GivenName = TownNPCs.GenerateAltName(Main.npc[num].type);
-						SendDebugMessage($"Name decided AFTER change: {Main.npc[num].GivenName}", Color.LightPink);
+						SendDebugMessage($"Name changed from {prevName} to {Main.npc[num].GivenName}", Color.LightPink);
 					}
+					*/
 				});
 			}
 			else Logger.Error("IL Error Fail"); //Log the error

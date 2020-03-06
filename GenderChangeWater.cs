@@ -1,10 +1,8 @@
 ﻿using Terraria.ModLoader;
 using Terraria.ID;
 using Terraria;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using Terraria.ModLoader.IO;
 using Microsoft.Xna.Framework;
 
 namespace GenderVariety
@@ -56,13 +54,20 @@ namespace GenderVariety
 			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == target.type);
 			if (index == -1) return;
 			GenderVariety.SendDebugMessage($"You hit {target.FullName}", Color.ForestGreen);
-			TownNPCs townNPCs = target.GetGlobalNPC<TownNPCs>();
-			TownNPCInfo npcInfo = GenderVariety.townNPCList.townNPCs[index];
+
+			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+			TownNPCData npcData = TownNPCWorld.SavedData[index];
 
 			int newGender = 0;
-			if (npcInfo.isMale) newGender = townNPCs.altGender ? TownNPCs.Male : TownNPCs.Female;
-			else newGender = townNPCs.altGender ? TownNPCs.Female : TownNPCs.Male;
-			townNPCs.setGender = townNPCs.AssignGender(target, newGender);
+			if (npcData.savedGender == GenderVariety.Unassigned) {
+				if (townNPC.isMale) newGender = GenderVariety.Female;
+				else newGender = GenderVariety.Male;
+			}
+			else {
+				if (npcData.savedGender == GenderVariety.Male) newGender = GenderVariety.Female;
+				if (npcData.savedGender == GenderVariety.Female) newGender = GenderVariety.Male;
+			}
+			TownNPCData.AssignGender(target, newGender);
 		}
 
 		public override void Kill(int timeLeft) {
