@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 namespace GenderVariety
 {
 	// TODO: Update NPC textures (and more) for Multiplayer
+
 	public class GenderVariety : Mod
 	{
 		public const int Unassigned = 0;
@@ -34,11 +35,11 @@ namespace GenderVariety
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Func<string, NPC, string>>(
 				delegate (string ogValue, NPC npc) {
-					int index = townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
+					int index = GetNPCIndex(npc);
 					if (index == -1) return ogValue;
 					
 					TownNPCData npcData = TownNPCWorld.SavedData[index];
-					if (TownNPCs.IsAltGender(npc)) {
+					if (TownNPCInfo.IsAltGender(npc)) {
 						if (npc.type == NPCID.PartyGirl) return "Party Boy";
 						else if (npc.type == NPCID.SantaClaus) return "Mrs. Claus";
 					}
@@ -95,6 +96,8 @@ namespace GenderVariety
 			}
 			townNPCList = null;
 		}
+
+		public static int GetNPCIndex(NPC npc) => townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
 
 		public static void SendDebugMessage(string message, Color color = default) {
 			if (ModContent.GetInstance<GVConfig>().EnableDebugMode) Main.NewText(message, color);

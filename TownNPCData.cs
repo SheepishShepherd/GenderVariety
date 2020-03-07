@@ -40,6 +40,14 @@ namespace GenderVariety
 		internal static TownNPCInfo AddTownNPC(int type, int headIndex, bool isMale) {
 			return new TownNPCInfo(type, headIndex, isMale);
 		}
+		
+		public static bool IsAltGender(NPC npc) {
+			int index = GenderVariety.GetNPCIndex(npc);
+			if (index == -1) return false;
+			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+			TownNPCData npcData = TownNPCWorld.SavedData[index];
+			return (townNPC.isMale && npcData.savedGender == GenderVariety.Female) || (!townNPC.isMale && npcData.savedGender == GenderVariety.Male);
+		}
 	}
 
 	internal class TownNPCSetup
@@ -82,8 +90,7 @@ namespace GenderVariety
 		}
 	}
 
-	internal class TownNPCData : TagSerializable
-	{
+	internal class TownNPCData : TagSerializable {
 		internal int type;
 		internal int savedGender;
 		internal string name;
@@ -116,13 +123,12 @@ namespace GenderVariety
 
 		// Leave 0 to choose at random/config. Using 1 or 2 sets it to that gender
 		internal static void AssignGender(NPC npc, int setGender = 0) {
-			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
+			int index = GenderVariety.GetNPCIndex(npc);
 			if (index == -1) {
-				GenderVariety.SendDebugMessage($"{npc.FullName} is not listed as a gender altering NPC", Color.LightYellow);
+				GenderVariety.SendDebugMessage($"{npc.TypeName}({npc.type}) is not a valid NPC for gender changing.", Color.IndianRed);
 				return;
 			}
 
-			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
 			TownNPCData npcData = TownNPCWorld.SavedData[index];
 			// If we aren't setting a gender manually, go through the OnSpawn process
 			if (setGender == GenderVariety.Unassigned) {
@@ -133,15 +139,30 @@ namespace GenderVariety
 					else setGender = Main.rand.NextBool() ? GenderVariety.Male : GenderVariety.Female;
 				}
 			}
-			
+
 			// Debug Message
 			string oldGender = npcData.savedGender == 0 ? "Unassigned" : npcData.savedGender == 1 ? "Male" : "Female";
 			string newGender = setGender == 0 ? "Unassigned" : setGender == 1 ? "Male" : "Female";
-			GenderVariety.SendDebugMessage($"Changed gender for {npc.type} from {oldGender} to {newGender}", Color.MediumPurple);
+			GenderVariety.SendDebugMessage($"The {npc.TypeName}({npc.type}) is now a {newGender} (previously {oldGender})", Color.MediumPurple);
 
 			// Update name (texture changes update in PreAI)
 			npcData.savedGender = setGender;
+			SwapTextures(index, npc);
 			npc.GivenName = GenerateAltName(index, npc);
+		}
+
+		internal static void SwapTextures(int index, NPC npc){
+			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+			if (TownNPCInfo.IsAltGender(npc)) {
+				if (NPCID.Sets.ExtraTextureCount[npc.type] != 0) Main.npcAltTextures[npc.type][0] = townNPC.npcAltTexture;
+				else Main.npcTexture[npc.type] = townNPC.npcAltTexture;
+				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcAltTexture_Head;
+			}
+			else {
+				if (NPCID.Sets.ExtraTextureCount[npc.type] != 0) Main.npcAltTextures[npc.type][0] = townNPC.npcTexture;
+				else Main.npcTexture[npc.type] = townNPC.npcTexture;
+				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcTexture_Head;
+			}
 		}
 
 		internal static string GenerateAltName(int index, NPC npc) {
@@ -150,7 +171,7 @@ namespace GenderVariety
 			TownNPCData npcData = TownNPCWorld.SavedData[index];
 
 			// Check saved names first. Saved names are reset on NPC death.
-			if (!TownNPCs.IsAltGender(npc)) {
+			if (!TownNPCInfo.IsAltGender(npc)) {
 				if (npcData.name != "") return npcData.name;
 				else return NPC.getNewNPCName(npc.type);
 			}

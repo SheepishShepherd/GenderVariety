@@ -33,14 +33,6 @@ namespace GenderVariety
 
 	public class TownNPCs : GlobalNPC
 	{
-		public static bool IsAltGender(NPC npc) {
-			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
-			if (index == -1) return false;
-			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			TownNPCData npcData = TownNPCWorld.SavedData[index];
-			return (townNPC.isMale && npcData.savedGender == GenderVariety.Female) || (!townNPC.isMale && npcData.savedGender == GenderVariety.Male);
-		}
-
 		public override void NPCLoot(NPC npc) {
 			// Reset saved data here
 			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
@@ -50,8 +42,8 @@ namespace GenderVariety
 
 		// Swapped genders go to respective statues
 		public override bool? CanGoToStatue(NPC npc, bool toKingStatue) {
-			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
-			if (IsAltGender(npc) && index != -1 && npc.type != NPCID.SantaClaus) { // Santa doesnt teleport in vanilla
+			int index = GenderVariety.GetNPCIndex(npc);
+			if (index != -1 && npc.type != NPCID.SantaClaus && TownNPCInfo.IsAltGender(npc)) { // Santa doesnt teleport in vanilla
 				TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
 				return toKingStatue ? !townNPC.isMale : townNPC.isMale; // Since we check for altGender, we do the opposite
 			}
@@ -60,24 +52,11 @@ namespace GenderVariety
 
 		public override bool PreAI(NPC npc) {
 			// Textures are updated in preAI to update when needed, since theres only two states
-			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
-			if (index == -1) return true;
-
-			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			if (IsAltGender(npc)) {
-				Main.npcTexture[npc.type] = townNPC.npcAltTexture;
-				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcAltTexture_Head;
-			}
-			else {
-				Main.npcTexture[npc.type] = townNPC.npcTexture;
-				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcTexture_Head;
-			}
+			
 			return true;
 		}
 
 		// TODO: Change some chat texts
-		public override void GetChat(NPC npc, ref string chat) {
-			base.GetChat(npc, ref chat);
-		}
+		//public override void GetChat(NPC npc, ref string chat)
 	}
 }

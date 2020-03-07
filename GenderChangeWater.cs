@@ -48,12 +48,12 @@ namespace GenderVariety
 			projectile.width = 14;
 		}
 
-		public override bool? CanHitNPC(NPC target) => GenderVariety.townNPCList.townNPCs.Any(x => x.type == target.type);
+		public override bool? CanHitNPC(NPC target) => GenderVariety.GetNPCIndex(target) >= 0;
 
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == target.type);
+			int index = GenderVariety.GetNPCIndex(target);
 			if (index == -1) return;
-			GenderVariety.SendDebugMessage($"You hit {target.FullName}", Color.ForestGreen);
+			GenderVariety.SendDebugMessage($"{target.FullName}({target.type}) was hit with Gender Change Water", Color.ForestGreen);
 
 			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
 			TownNPCData npcData = TownNPCWorld.SavedData[index];
