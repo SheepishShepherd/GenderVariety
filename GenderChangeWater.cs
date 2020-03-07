@@ -21,7 +21,7 @@ namespace GenderVariety
 			item.maxStack = 999;
 			item.noMelee = true;
 			item.noUseGraphic = true;
-			item.rare = 3;
+			item.rare = ItemRarityID.Orange;
 			item.shoot = ModContent.ProjectileType<GenderChangeWater_Proj>();
 			item.shootSpeed = 9f;
 			item.useAnimation = 15;

@@ -1,12 +1,8 @@
 ﻿using Terraria.ModLoader;
 using Terraria.ID;
 using Terraria;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria.ModLoader.IO;
-using Microsoft.Xna.Framework;
-using System.Reflection;
 
 namespace GenderVariety
 {

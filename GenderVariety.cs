@@ -10,7 +10,6 @@ using Terraria.ModLoader;
 namespace GenderVariety
 {
 	// TODO: Update NPC textures (and more) for Multiplayer
-
 	public class GenderVariety : Mod
 	{
 		public const int Unassigned = 0;
@@ -78,23 +77,10 @@ namespace GenderVariety
 
 				//Emit delegate action code
 				c.EmitDelegate<Action<int>>(delegate (int num) {
-					NPC npc = Main.npc[num];
 					//Code to insert/inject
+					NPC npc = Main.npc[num];
 					int index = townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
-					if (index == -1) return;
-					
-					TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-					TownNPCData npcData = TownNPCWorld.SavedData[index];
-
-					TownNPCData.AssignGender(npc);
-					/*
-					if (TownNPCs.IsAltGender(Main.npc[num])) {
-						SendDebugMessage($"setGender = {npcData.savedGender} (altGender = {TownNPCs.IsAltGender(Main.npc[num])})", Color.LightPink);
-						string prevName = Main.npc[num].GivenName;
-						Main.npc[num].GivenName = TownNPCs.GenerateAltName(Main.npc[num].type);
-						SendDebugMessage($"Name changed from {prevName} to {Main.npc[num].GivenName}", Color.LightPink);
-					}
-					*/
+					if (index != -1) TownNPCData.AssignGender(npc);
 				});
 			}
 			else Logger.Error("IL Error Fail"); //Log the error
