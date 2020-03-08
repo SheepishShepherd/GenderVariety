@@ -19,9 +19,8 @@ namespace GenderVariety
 		internal Texture2D npcTexture_Head;
 		internal Texture2D npcAltTexture;
 		internal Texture2D npcAltTexture_Head;
-
-		//internal Texture2D npcPartyTexture;
-		//internal Texture2D npcAltPartyTexture;
+		internal Texture2D npcPartyTexture;
+		internal Texture2D npcAltPartyTexture;
 
 		TownNPCInfo(int type, int headIndex, bool isMale) {
 			this.type = type;
@@ -31,10 +30,14 @@ namespace GenderVariety
 			this.npcTexture_Head = Main.npcHeadTexture[headIndex];
 			this.npcAltTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC/NPC_{type}");
 			this.npcAltTexture_Head = ModContent.GetTexture($"GenderVariety/Resources/NPCHead/NPC_Head_{headIndex}");
-
-			//TODO: Party Hat textures arrays? needed too
-			//this.npcPartyTexture = Main.npcAltTextures[type][0];
-			//this.npcAltPartyTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC_Head_{headIndex}");
+			if (NPCID.Sets.ExtraTextureCount[type] != 0) {
+				this.npcPartyTexture = Main.npcAltTextures[type][1];
+				this.npcAltPartyTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC/NPC_{type}_Alt_1");
+			}
+			else {
+				this.npcPartyTexture = null;
+				this.npcAltPartyTexture = null;
+			}
 		}
 
 		internal static TownNPCInfo AddTownNPC(int type, int headIndex, bool isMale) {
@@ -42,7 +45,15 @@ namespace GenderVariety
 		}
 		
 		public static bool IsAltGender(NPC npc) {
-			int index = GenderVariety.GetNPCIndex(npc);
+			int index = GenderVariety.GetNPCIndex(npc.type);
+			if (index == -1) return false;
+			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+			TownNPCData npcData = TownNPCWorld.SavedData[index];
+			return (townNPC.isMale && npcData.savedGender == GenderVariety.Female) || (!townNPC.isMale && npcData.savedGender == GenderVariety.Male);
+		}
+
+		public static bool IsAltGender(int type) {
+			int index = GenderVariety.GetNPCIndex(type);
 			if (index == -1) return false;
 			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
 			TownNPCData npcData = TownNPCWorld.SavedData[index];
@@ -123,7 +134,7 @@ namespace GenderVariety
 
 		// Leave 0 to choose at random/config. Using 1 or 2 sets it to that gender
 		internal static void AssignGender(NPC npc, int setGender = 0) {
-			int index = GenderVariety.GetNPCIndex(npc);
+			int index = GenderVariety.GetNPCIndex(npc.type);
 			if (index == -1) {
 				GenderVariety.SendDebugMessage($"{npc.TypeName}({npc.type}) is not a valid NPC for gender changing.", Color.IndianRed);
 				return;
@@ -147,20 +158,26 @@ namespace GenderVariety
 
 			// Update name (texture changes update in PreAI)
 			npcData.savedGender = setGender;
-			SwapTextures(index, npc);
+			SwapTextures(index, npc.type);
 			npc.GivenName = GenerateAltName(index, npc);
 		}
 
-		internal static void SwapTextures(int index, NPC npc){
+		internal static void SwapTextures(int index, int npcType) {
 			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			if (TownNPCInfo.IsAltGender(npc)) {
-				if (NPCID.Sets.ExtraTextureCount[npc.type] != 0) Main.npcAltTextures[npc.type][0] = townNPC.npcAltTexture;
-				else Main.npcTexture[npc.type] = townNPC.npcAltTexture;
+			if (TownNPCInfo.IsAltGender(npcType)) {
+				if (NPCID.Sets.ExtraTextureCount[npcType] != 0) {
+					Main.npcAltTextures[npcType][0] = townNPC.npcAltTexture;
+					Main.npcAltTextures[npcType][1] = townNPC.npcAltPartyTexture;
+				}
+				else Main.npcTexture[npcType] = townNPC.npcAltTexture;
 				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcAltTexture_Head;
 			}
 			else {
-				if (NPCID.Sets.ExtraTextureCount[npc.type] != 0) Main.npcAltTextures[npc.type][0] = townNPC.npcTexture;
-				else Main.npcTexture[npc.type] = townNPC.npcTexture;
+				if (NPCID.Sets.ExtraTextureCount[npcType] != 0) {
+					Main.npcAltTextures[npcType][0] = townNPC.npcTexture;
+					Main.npcAltTextures[npcType][1] = townNPC.npcPartyTexture;
+				}
+				else Main.npcTexture[npcType] = townNPC.npcTexture;
 				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcTexture_Head;
 			}
 		}

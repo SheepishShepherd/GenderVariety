@@ -12,7 +12,6 @@ namespace GenderVariety
 
 		public override void Initialize() {
 			SavedData = new List<TownNPCData>();
-
 			for (int i = 0; i < GenderVariety.townNPCList.townNPCs.Count; i++) {
 				TownNPCInfo list = GenderVariety.townNPCList.townNPCs[i];
 				SavedData.Add(new TownNPCData(list.type, GenderVariety.Unassigned, "", ""));
@@ -28,6 +27,10 @@ namespace GenderVariety
 
 		public override void Load(TagCompound tag) {
 			SavedData = tag.Get<List<TownNPCData>>("SavedTownNPCData");
+			// Setup textures when data is loaded
+			for (int i = 0; i < SavedData.Count; i++) {
+				TownNPCData.SwapTextures(i, SavedData[i].type);
+			}
 		}
 	}
 
@@ -42,7 +45,7 @@ namespace GenderVariety
 
 		// Swapped genders go to respective statues
 		public override bool? CanGoToStatue(NPC npc, bool toKingStatue) {
-			int index = GenderVariety.GetNPCIndex(npc);
+			int index = GenderVariety.GetNPCIndex(npc.type);
 			if (index != -1 && npc.type != NPCID.SantaClaus && TownNPCInfo.IsAltGender(npc)) { // Santa doesnt teleport in vanilla
 				TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
 				return toKingStatue ? !townNPC.isMale : townNPC.isMale; // Since we check for altGender, we do the opposite
