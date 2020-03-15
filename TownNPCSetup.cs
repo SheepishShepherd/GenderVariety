@@ -14,7 +14,7 @@ namespace GenderVariety
 			SavedData = new List<TownNPCData>();
 			for (int i = 0; i < GenderVariety.townNPCList.townNPCs.Count; i++) {
 				TownNPCInfo list = GenderVariety.townNPCList.townNPCs[i];
-				SavedData.Add(new TownNPCData(list.type, GenderVariety.Unassigned, "", ""));
+				SavedData.Add(new TownNPCData(list.type, TownNPCSetup.Unassigned, "", ""));
 			}
 		}
 
@@ -29,6 +29,7 @@ namespace GenderVariety
 			SavedData = tag.Get<List<TownNPCData>>("SavedTownNPCData");
 			// Setup textures when data is loaded
 			for (int i = 0; i < SavedData.Count; i++) {
+				GenderVariety.townNPCList.npcIsAltGender[i] = SavedData[i].savedGender != GenderVariety.townNPCList.townNPCs[i].ogGender;
 				TownNPCData.SwapTextures(i, SavedData[i].type);
 			}
 		}
@@ -36,27 +37,20 @@ namespace GenderVariety
 
 	public class TownNPCs : GlobalNPC
 	{
-		public override void NPCLoot(NPC npc) {
-			// Reset saved data here
+		public override void NPCLoot(NPC npc) { // Reset saved data here
 			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
 			if (index == -1) return;
-			TownNPCWorld.SavedData[index] = new TownNPCData(npc.type, GenderVariety.Unassigned, "", "");
+			TownNPCWorld.SavedData[index] = new TownNPCData(npc.type, TownNPCSetup.Unassigned, "", "");
 		}
 
 		// Swapped genders go to respective statues
 		public override bool? CanGoToStatue(NPC npc, bool toKingStatue) {
 			int index = GenderVariety.GetNPCIndex(npc.type);
-			if (index != -1 && npc.type != NPCID.SantaClaus && TownNPCInfo.IsAltGender(npc)) { // Santa doesnt teleport in vanilla
-				TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-				return toKingStatue ? !townNPC.isMale : townNPC.isMale; // Since we check for altGender, we do the opposite
+			if (index != -1 && npc.type != NPCID.SantaClaus && GenderVariety.townNPCList.npcIsAltGender[index]) {
+				TownNPCData npcData = TownNPCWorld.SavedData[index]; // Santa doesnt teleport in vanilla
+				return toKingStatue ? npcData.savedGender == TownNPCSetup.Female : npcData.savedGender == TownNPCSetup.Male; // Since we check for altGender, we do the opposite
 			}
 			return null;
-		}
-
-		public override bool PreAI(NPC npc) {
-			// Textures are updated in preAI to update when needed, since theres only two states
-			
-			return true;
 		}
 
 		// TODO: Change some chat texts

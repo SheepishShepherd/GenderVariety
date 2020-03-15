@@ -14,7 +14,7 @@ namespace GenderVariety
 	{
 		internal int type;
 		internal int headIndex;
-		internal bool isMale;
+		internal int ogGender;
 		internal Texture2D npcTexture;
 		internal Texture2D npcTexture_Head;
 		internal Texture2D npcAltTexture;
@@ -22,10 +22,10 @@ namespace GenderVariety
 		internal Texture2D npcPartyTexture;
 		internal Texture2D npcAltPartyTexture;
 
-		TownNPCInfo(int type, int headIndex, bool isMale) {
+		TownNPCInfo(int type, int headIndex, int ogGender) {
 			this.type = type;
 			this.headIndex = headIndex;
-			this.isMale = isMale;
+			this.ogGender = ogGender;
 			this.npcTexture = Main.npcTexture[type];
 			this.npcTexture_Head = Main.npcHeadTexture[headIndex];
 			this.npcAltTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC/NPC_{type}");
@@ -40,64 +40,60 @@ namespace GenderVariety
 			}
 		}
 
-		internal static TownNPCInfo AddTownNPC(int type, int headIndex, bool isMale) {
-			return new TownNPCInfo(type, headIndex, isMale);
-		}
-		
-		public static bool IsAltGender(NPC npc) {
-			int index = GenderVariety.GetNPCIndex(npc.type);
-			if (index == -1) return false;
-			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			TownNPCData npcData = TownNPCWorld.SavedData[index];
-			return (townNPC.isMale && npcData.savedGender == GenderVariety.Female) || (!townNPC.isMale && npcData.savedGender == GenderVariety.Male);
-		}
-
-		public static bool IsAltGender(int type) {
-			int index = GenderVariety.GetNPCIndex(type);
-			if (index == -1) return false;
-			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			TownNPCData npcData = TownNPCWorld.SavedData[index];
-			return (townNPC.isMale && npcData.savedGender == GenderVariety.Female) || (!townNPC.isMale && npcData.savedGender == GenderVariety.Male);
+		internal static TownNPCInfo AddTownNPC(int type, int headIndex, int ogGender) {
+			return new TownNPCInfo(type, headIndex, ogGender);
 		}
 	}
 
 	internal class TownNPCSetup
 	{
+		public const int Unassigned = 0;
+		public const int Male = 1;
+		public const int Female = 2;
+
 		public TownNPCSetup() {
 			GenderVariety.townNPCList = this;
 			InitializeTownNPCList();
 		}
 
 		internal List<TownNPCInfo> townNPCs;
+		internal bool[] npcIsAltGender;
 
 		private void InitializeTownNPCList() {
-			townNPCs = new List<TownNPCInfo>()
-			{
-				TownNPCInfo.AddTownNPC(NPCID.Guide, 1, true),
-				TownNPCInfo.AddTownNPC(NPCID.Merchant, 2, true),
-				TownNPCInfo.AddTownNPC(NPCID.Nurse, 3, false),
-				TownNPCInfo.AddTownNPC(NPCID.Demolitionist, 4, true),
-				TownNPCInfo.AddTownNPC(NPCID.Dryad, 5, false),
-				TownNPCInfo.AddTownNPC(NPCID.ArmsDealer, 6, true),
-				TownNPCInfo.AddTownNPC(NPCID.Clothier, 7, true),
-				TownNPCInfo.AddTownNPC(NPCID.Mechanic, 8, false),
-				TownNPCInfo.AddTownNPC(NPCID.GoblinTinkerer, 9, true),
-				TownNPCInfo.AddTownNPC(NPCID.Wizard, 10, true),
-				TownNPCInfo.AddTownNPC(NPCID.SantaClaus, 11, true),
-				TownNPCInfo.AddTownNPC(NPCID.Truffle, 12, true),
-				TownNPCInfo.AddTownNPC(NPCID.Steampunker, 13, false),
-				TownNPCInfo.AddTownNPC(NPCID.DyeTrader, 14, true),
-				TownNPCInfo.AddTownNPC(NPCID.PartyGirl, 15, false),
-				TownNPCInfo.AddTownNPC(NPCID.Cyborg, 16, true),
-				TownNPCInfo.AddTownNPC(NPCID.Painter, 17, true),
+			townNPCs = new List<TownNPCInfo>() {
+				TownNPCInfo.AddTownNPC(NPCID.Guide, 1, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Merchant, 2, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Nurse, 3, Female),
+				TownNPCInfo.AddTownNPC(NPCID.Demolitionist, 4, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Dryad, 5, Female),
+				TownNPCInfo.AddTownNPC(NPCID.ArmsDealer, 6, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Clothier, 7, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Mechanic, 8, Female),
+				TownNPCInfo.AddTownNPC(NPCID.GoblinTinkerer, 9, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Wizard, 10, Male),
+				TownNPCInfo.AddTownNPC(NPCID.SantaClaus, 11, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Truffle, 12, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Steampunker, 13, Female),
+				TownNPCInfo.AddTownNPC(NPCID.DyeTrader, 14, Male),
+				TownNPCInfo.AddTownNPC(NPCID.PartyGirl, 15, Female),
+				TownNPCInfo.AddTownNPC(NPCID.Cyborg, 16, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Painter, 17, Male),
 				//TownNPCInfo.AddTownNPC(NPCID.WitchDoctor, 18, true),
-				TownNPCInfo.AddTownNPC(NPCID.Pirate, 19, true),
-				TownNPCInfo.AddTownNPC(NPCID.Stylist, 20, false),
+				TownNPCInfo.AddTownNPC(NPCID.Pirate, 19, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Stylist, 20, Female),
 				//TownNPCInfo.AddTownNPC(NPCID.TravellingMerchant, 21, true),
-				TownNPCInfo.AddTownNPC(NPCID.Angler, 22, true),
+				TownNPCInfo.AddTownNPC(NPCID.Angler, 22, Male),
 				//TownNPCInfo.AddTownNPC(NPCID.TaxCollector, 23, true),
 				//TownNPCInfo.AddTownNPC(NPCID.DD2Bartender, 24, true),
 			};
+
+			npcIsAltGender = new bool[townNPCs.Count]; // All are set to default (false)
+		}
+
+		internal bool IsAltGender(int index) {
+			int saved = TownNPCWorld.SavedData[index].savedGender;
+			if (saved == Unassigned) return false;
+			else return saved != townNPCs[index].ogGender;
 		}
 	}
 
@@ -142,12 +138,12 @@ namespace GenderVariety
 
 			TownNPCData npcData = TownNPCWorld.SavedData[index];
 			// If we aren't setting a gender manually, go through the OnSpawn process
-			if (setGender == GenderVariety.Unassigned) {
-				if (npcData.savedGender != GenderVariety.Unassigned) setGender = npcData.savedGender;
+			if (setGender == TownNPCSetup.Unassigned) {
+				if (npcData.savedGender != TownNPCSetup.Unassigned) setGender = npcData.savedGender;
 				else {
-					if (ModContent.GetInstance<GVConfig>().ForcedMale.Any(x => x.Type == npc.type)) setGender = GenderVariety.Male;
-					else if (ModContent.GetInstance<GVConfig>().ForcedFemale.Any(x => x.Type == npc.type)) setGender = GenderVariety.Female;
-					else setGender = Main.rand.NextBool() ? GenderVariety.Male : GenderVariety.Female;
+					if (ModContent.GetInstance<GVConfig>().ForcedMale.Any(x => x.Type == npc.type)) setGender = TownNPCSetup.Male;
+					else if (ModContent.GetInstance<GVConfig>().ForcedFemale.Any(x => x.Type == npc.type)) setGender = TownNPCSetup.Female;
+					else setGender = Main.rand.NextBool() ? TownNPCSetup.Male : TownNPCSetup.Female;
 				}
 			}
 
@@ -158,13 +154,14 @@ namespace GenderVariety
 
 			// Update name (texture changes update in PreAI)
 			npcData.savedGender = setGender;
+			GenderVariety.townNPCList.npcIsAltGender[index] = !GenderVariety.townNPCList.npcIsAltGender[index];
 			SwapTextures(index, npc.type);
 			npc.GivenName = GenerateAltName(index, npc);
 		}
 
 		internal static void SwapTextures(int index, int npcType) {
 			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			if (TownNPCInfo.IsAltGender(npcType)) {
+			if (GenderVariety.townNPCList.npcIsAltGender[index]) {
 				if (NPCID.Sets.ExtraTextureCount[npcType] != 0) {
 					Main.npcAltTextures[npcType][0] = townNPC.npcAltTexture;
 					Main.npcAltTextures[npcType][1] = townNPC.npcAltPartyTexture;
@@ -188,7 +185,7 @@ namespace GenderVariety
 			TownNPCData npcData = TownNPCWorld.SavedData[index];
 
 			// Check saved names first. Saved names are reset on NPC death.
-			if (!TownNPCInfo.IsAltGender(npc)) {
+			if (!GenderVariety.townNPCList.npcIsAltGender[index]) {
 				if (npcData.name != "") return npcData.name;
 				else return NPC.getNewNPCName(npc.type);
 			}

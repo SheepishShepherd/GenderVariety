@@ -13,9 +13,6 @@ namespace GenderVariety
 
 	public class GenderVariety : Mod
 	{
-		public const int Unassigned = 0;
-		public const int Male = 1;
-		public const int Female = 2;
 
 		internal static TownNPCSetup townNPCList;
 
@@ -38,8 +35,7 @@ namespace GenderVariety
 					int index = GetNPCIndex(npc.type);
 					if (index == -1) return ogValue;
 					
-					TownNPCData npcData = TownNPCWorld.SavedData[index];
-					if (TownNPCInfo.IsAltGender(npc)) {
+					if (townNPCList.npcIsAltGender[index]) {
 						if (npc.type == NPCID.PartyGirl) return "Party Boy";
 						else if (npc.type == NPCID.SantaClaus) return "Mrs. Claus";
 					}
@@ -57,14 +53,9 @@ namespace GenderVariety
 		}
 
 		private void NPC_NewNPC(ILContext il) {
-			//create the il cursor
-			ILCursor c = new ILCursor(il);
-
-			//go to line 0
-			c.Goto(0);
-
-			//Hold a local varible with the il label
-			ILLabel wherestdve = null;
+			ILCursor c = new ILCursor(il); //create the il cursor
+			c.Goto(0); //go to line 0
+			ILLabel wherestdve = null; //Hold a local varible with the il label
 
 			// find the if block that compares the values
 			if (c.TryGotoNext(i => i.MatchBlt(out _) && (i.Previous?.Match(OpCodes.Ldc_I4_0) == true) && (i.Previous?.Previous?.Match(OpCodes.Ldloc_0) == true)) &&
@@ -72,9 +63,7 @@ namespace GenderVariety
 				c.GotoLabel(wherestdve); // go to where the if block ends
 
 				c.Index += 8; //insert above it somehow works??? EDIT: Idk where it is but +8 seems to work
-
-				//Get the num param
-				c.Emit(OpCodes.Ldloc_0);
+				c.Emit(OpCodes.Ldloc_0); //Get the num param
 
 				//Emit delegate action code
 				c.EmitDelegate<Action<int>>(delegate (int num) {
@@ -88,9 +77,8 @@ namespace GenderVariety
 		}
 
 		public override void Unload() {
-			// Reset the textures!
 			for (int i = 0; i < townNPCList.townNPCs.Count; i++) {
-				TownNPCInfo townNPC = townNPCList.townNPCs[i];
+				TownNPCInfo townNPC = townNPCList.townNPCs[i]; // Reset the textures!
 				Main.npcTexture[townNPC.type] = townNPC.npcTexture;
 				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcTexture_Head;
 			}

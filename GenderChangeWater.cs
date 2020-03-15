@@ -59,13 +59,13 @@ namespace GenderVariety
 			TownNPCData npcData = TownNPCWorld.SavedData[index];
 
 			int newGender = 0;
-			if (npcData.savedGender == GenderVariety.Unassigned) {
-				if (townNPC.isMale) newGender = GenderVariety.Female;
-				else newGender = GenderVariety.Male;
+			if (npcData.savedGender == TownNPCSetup.Unassigned) {
+				if (townNPC.ogGender == TownNPCSetup.Male) newGender = TownNPCSetup.Female;
+				else newGender = TownNPCSetup.Male;
 			}
 			else {
-				if (npcData.savedGender == GenderVariety.Male) newGender = GenderVariety.Female;
-				if (npcData.savedGender == GenderVariety.Female) newGender = GenderVariety.Male;
+				if (npcData.savedGender == TownNPCSetup.Male) newGender = TownNPCSetup.Female;
+				if (npcData.savedGender == TownNPCSetup.Female) newGender = TownNPCSetup.Male;
 			}
 			TownNPCData.AssignGender(target, newGender);
 		}
