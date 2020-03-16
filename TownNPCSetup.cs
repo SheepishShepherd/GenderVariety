@@ -27,11 +27,6 @@ namespace GenderVariety
 
 		public override void Load(TagCompound tag) {
 			SavedData = tag.Get<List<TownNPCData>>("SavedTownNPCData");
-			// Setup textures when data is loaded
-			for (int i = 0; i < SavedData.Count; i++) {
-				GenderVariety.townNPCList.npcIsAltGender[i] = SavedData[i].savedGender != GenderVariety.townNPCList.townNPCs[i].ogGender;
-				TownNPCData.SwapTextures(i, SavedData[i].type);
-			}
 		}
 	}
 
@@ -55,5 +50,17 @@ namespace GenderVariety
 
 		// TODO: Change some chat texts
 		//public override void GetChat(NPC npc, ref string chat)
+	}
+	
+	internal class TownNPCPlayer : ModPlayer
+	{
+		public override void OnEnterWorld(Player player) {
+			// Setup textures when data is loaded
+			for (int i = 0; i < TownNPCWorld.SavedData.Count; i++) {
+				if (TownNPCWorld.SavedData[i].savedGender == TownNPCSetup.Unassigned) GenderVariety.townNPCList.npcIsAltGender[i] = false;
+				else GenderVariety.townNPCList.npcIsAltGender[i] = TownNPCWorld.SavedData[i].savedGender != GenderVariety.townNPCList.townNPCs[i].ogGender;
+				TownNPCData.SwapTextures(i, TownNPCWorld.SavedData[i].type);
+			}
+		}
 	}
 }

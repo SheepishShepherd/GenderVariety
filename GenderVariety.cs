@@ -13,7 +13,6 @@ namespace GenderVariety
 
 	public class GenderVariety : Mod
 	{
-
 		internal static TownNPCSetup townNPCList;
 
 		public GenderVariety() {

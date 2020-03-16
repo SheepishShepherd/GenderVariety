@@ -26,18 +26,19 @@ namespace GenderVariety
 			this.type = type;
 			this.headIndex = headIndex;
 			this.ogGender = ogGender;
-			this.npcTexture = Main.npcTexture[type];
-			this.npcTexture_Head = Main.npcHeadTexture[headIndex];
-			this.npcAltTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC/NPC_{type}");
-			this.npcAltTexture_Head = ModContent.GetTexture($"GenderVariety/Resources/NPCHead/NPC_Head_{headIndex}");
 			if (NPCID.Sets.ExtraTextureCount[type] != 0) {
+				this.npcTexture = Main.npcAltTextures[type][0];
 				this.npcPartyTexture = Main.npcAltTextures[type][1];
 				this.npcAltPartyTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC/NPC_{type}_Alt_1");
 			}
 			else {
+				this.npcTexture = Main.npcTexture[type];
 				this.npcPartyTexture = null;
 				this.npcAltPartyTexture = null;
 			}
+			this.npcAltTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC/NPC_{type}");
+			this.npcTexture_Head = Main.npcHeadTexture[headIndex];
+			this.npcAltTexture_Head = ModContent.GetTexture($"GenderVariety/Resources/NPCHead/NPC_Head_{headIndex}");
 		}
 
 		internal static TownNPCInfo AddTownNPC(int type, int headIndex, int ogGender) {
