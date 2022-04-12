@@ -4,6 +4,7 @@ using Terraria;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Terraria.Audio;
 
 namespace GenderVariety
 {
@@ -14,22 +15,22 @@ namespace GenderVariety
 		}
 
 		public override void SetDefaults() {
-			item.consumable = true;
-			item.damage = 20;
-			item.knockBack = 3f;
-			item.height = 20;
-			item.maxStack = 999;
-			item.noMelee = true;
-			item.noUseGraphic = true;
-			item.rare = ItemRarityID.Orange;
-			item.shoot = ModContent.ProjectileType<GenderChangeWater_Proj>();
-			item.shootSpeed = 9f;
-			item.useAnimation = 15;
-			item.UseSound = SoundID.Item1;
-			item.useStyle = ItemUseStyleID.SwingThrow;
-			item.useTime = 15;
-			item.value = 200;
-			item.width = 18;
+			Item.consumable = true;
+			Item.damage = 20;
+			Item.knockBack = 3f;
+			Item.height = 20;
+			Item.maxStack = 999;
+			Item.noMelee = true;
+			Item.noUseGraphic = true;
+			Item.rare = ItemRarityID.Orange;
+			Item.shoot = ModContent.ProjectileType<GenderChangeWater_Proj>();
+			Item.shootSpeed = 9f;
+			Item.useAnimation = 15;
+			Item.UseSound = SoundID.Item1;
+			Item.useStyle = ItemUseStyleID.Swing;
+			Item.useTime = 15;
+			Item.value = 200;
+			Item.width = 18;
 		}
 
 		public override void ModifyTooltips(List<TooltipLine> tooltips) {
@@ -41,11 +42,11 @@ namespace GenderVariety
 	public class GenderChangeWater_Proj : ModProjectile
 	{
 		public override void SetDefaults() {
-			projectile.aiStyle = 2;
-			projectile.friendly = true;
-			projectile.height = 14;
-			projectile.penetrate = 1;
-			projectile.width = 14;
+			Projectile.aiStyle = 2;
+			Projectile.friendly = true;
+			Projectile.height = 14;
+			Projectile.penetrate = 1;
+			Projectile.width = 14;
 		}
 
 		public override bool? CanHitNPC(NPC target) => GenderVariety.GetNPCIndex(target.type) >= 0;
@@ -71,15 +72,15 @@ namespace GenderVariety
 		}
 
 		public override void Kill(int timeLeft) {
-			Main.PlaySound(SoundID.Shatter, (int)projectile.position.X, (int)projectile.position.Y);
+			SoundEngine.PlaySound(SoundID.Shatter, (int)Projectile.position.X, (int)Projectile.position.Y);
 			for (int i = 0; i < 5; i++) {
 				// Broken glass
-				Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 13);
+				Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 13);
 			}
 			for (int j = 0; j < 30; j++) {
 				// Water Content
 				bool purple = j % 2 == 0 || j > 10;
-				int newDust = Dust.NewDust(projectile.position, projectile.width, projectile.height, j % 2 == 0 || j > 10 ? 98 : 101, 0f, -2f, 0, default, 1.1f);
+				int newDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, j % 2 == 0 || j > 10 ? 98 : 101, 0f, -2f, 0, default, 1.1f);
 				
 				Main.dust[newDust].alpha = 100;
 				ref float x = ref Main.dust[newDust].velocity.X;

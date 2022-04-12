@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -27,8 +28,10 @@ namespace GenderVariety
 			this.headIndex = headIndex;
 			this.ogGender = ogGender;
 			if (NPCID.Sets.ExtraTextureCount[type] != 0) {
-				this.npcTexture = Main.npcAltTextures[type][0];
+				this.npcTexture = TextureAssets.Npc[type].Value;
 				this.npcPartyTexture = Main.npcAltTextures[type][1];
+				TownNPCProfiles.Instance.GetProfile(type, out ITownNPCProfile profile);
+				this.npcPartyTexture = profile.GetTextureNPCShouldUse(Main.npc[0]).Value;
 				this.npcAltPartyTexture = ModContent.GetTexture($"GenderVariety/Resources/NPC/NPC_{type}_Alt_1");
 			}
 			else {
@@ -41,8 +44,8 @@ namespace GenderVariety
 			this.npcAltTexture_Head = ModContent.GetTexture($"GenderVariety/Resources/NPCHead/NPC_Head_{headIndex}");
 		}
 
-		internal static TownNPCInfo AddTownNPC(int type, int headIndex, int ogGender) {
-			return new TownNPCInfo(type, headIndex, ogGender);
+		internal static TownNPCInfo AddTownNPC(int type, int headIndex, int originalGender) {
+			return new TownNPCInfo(type, headIndex, originalGender);
 		}
 	}
 
@@ -62,30 +65,36 @@ namespace GenderVariety
 
 		private void InitializeTownNPCList() {
 			townNPCs = new List<TownNPCInfo>() {
-				TownNPCInfo.AddTownNPC(NPCID.Guide, 1, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Merchant, 2, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Nurse, 3, Female),
-				TownNPCInfo.AddTownNPC(NPCID.Demolitionist, 4, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Dryad, 5, Female),
-				TownNPCInfo.AddTownNPC(NPCID.ArmsDealer, 6, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Clothier, 7, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Mechanic, 8, Female),
-				TownNPCInfo.AddTownNPC(NPCID.GoblinTinkerer, 9, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Wizard, 10, Male),
-				TownNPCInfo.AddTownNPC(NPCID.SantaClaus, 11, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Truffle, 12, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Steampunker, 13, Female),
-				TownNPCInfo.AddTownNPC(NPCID.DyeTrader, 14, Male),
-				TownNPCInfo.AddTownNPC(NPCID.PartyGirl, 15, Female),
-				TownNPCInfo.AddTownNPC(NPCID.Cyborg, 16, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Painter, 17, Male),
-				//TownNPCInfo.AddTownNPC(NPCID.WitchDoctor, 18, true),
-				TownNPCInfo.AddTownNPC(NPCID.Pirate, 19, Male),
-				TownNPCInfo.AddTownNPC(NPCID.Stylist, 20, Female),
-				//TownNPCInfo.AddTownNPC(NPCID.TravellingMerchant, 21, true),
-				TownNPCInfo.AddTownNPC(NPCID.Angler, 22, Male),
-				//TownNPCInfo.AddTownNPC(NPCID.TaxCollector, 23, true),
+				// Ordered by wiki
+				TownNPCInfo.AddTownNPC(NPCID.Guide, NPCHeadID.Guide, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Merchant, NPCHeadID.Merchant, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Nurse, NPCHeadID.Nurse, Female),
+				TownNPCInfo.AddTownNPC(NPCID.Demolitionist, NPCHeadID.Demolitionist, Male),
+				TownNPCInfo.AddTownNPC(NPCID.DyeTrader, NPCHeadID.DyeTrader, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Angler, NPCHeadID.Angler, Male),
+				TownNPCInfo.AddTownNPC(NPCID.BestiaryGirl, NPCHeadID.BestiaryGirl, Female),
+				TownNPCInfo.AddTownNPC(NPCID.Dryad, NPCHeadID.Dryad, Female),
+				TownNPCInfo.AddTownNPC(NPCID.Painter, NPCHeadID.Painter, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Golfer, NPCHeadID.Golfer, Male),
+				TownNPCInfo.AddTownNPC(NPCID.ArmsDealer, NPCHeadID.ArmsDealer, Male),
 				//TownNPCInfo.AddTownNPC(NPCID.DD2Bartender, 24, true),
+				TownNPCInfo.AddTownNPC(NPCID.Stylist, NPCHeadID.Stylist, Female),
+				TownNPCInfo.AddTownNPC(NPCID.GoblinTinkerer, NPCHeadID.GoblinTinkerer, Male),
+				//TownNPCInfo.AddTownNPC(NPCID.WitchDoctor, 18, true),
+				TownNPCInfo.AddTownNPC(NPCID.Clothier, NPCHeadID.Clothier, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Mechanic, NPCHeadID.Mechanic, Female),
+				TownNPCInfo.AddTownNPC(NPCID.PartyGirl, NPCHeadID.PartyGirl, Female),
+
+				TownNPCInfo.AddTownNPC(NPCID.Wizard, NPCHeadID.Wizard, Male),
+				//TownNPCInfo.AddTownNPC(NPCID.TaxCollector, 23, true),
+				TownNPCInfo.AddTownNPC(NPCID.Truffle, NPCHeadID.Truffle, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Pirate, NPCHeadID.Pirate, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Steampunker, NPCHeadID.Steampunker, Female),
+				TownNPCInfo.AddTownNPC(NPCID.Cyborg, NPCHeadID.Cyborg, Male),
+				TownNPCInfo.AddTownNPC(NPCID.SantaClaus, NPCHeadID.SantaClaus, Male),
+				TownNPCInfo.AddTownNPC(NPCID.Princess, NPCHeadID.Princess, Female),
+
+				//TownNPCInfo.AddTownNPC(NPCID.TravellingMerchant, 21, true),
 			};
 
 			npcIsAltGender = new bool[townNPCs.Count]; // All are set to default (false)

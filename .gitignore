@@ -2,6 +2,10 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs
+/.vs/GenderVariety
 /obj
-/bin
+/Properties
+*.sln
+*.mdp
+workshop.json
+/bin/Debug/

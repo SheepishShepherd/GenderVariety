@@ -23,9 +23,32 @@ namespace GenderVariety
 			townNPCList = new TownNPCSetup();
 			IL.Terraria.NPC.NewNPC += NPC_NewNPC;
 			IL_NPC_TypeName += ChangeNPCTypeName;
+
+			// Methods to use?
+			/// GiveTownUniqueDataToNPCsThatNeedIt <---- I think this is what I want!!
+			/// NewNPC
+			/// SpawnTownNPC
 		}
 
-		private void ChangeNPCTypeName(ILContext il) {
+		// The method in question:
+		private static void GiveTownUniqueDataToNPCsThatNeedIt(int Type, int nextNPC) {
+			if (NPC.TypeToDefaultHeadIndex(Type) != -1 || Type == 453) {
+				Main.npc[nextNPC].GivenName = NPC.getNewNPCName(Type);
+				if (TownNPCProfiles.Instance.GetProfile(Type, out var profile)) {
+					Main.npc[nextNPC].townNpcVariationIndex = profile.RollVariation();
+					Main.npc[nextNPC].GivenName = profile.GetNameForVariant(Main.npc[nextNPC]);
+				}
+				Main.npc[nextNPC].needsUniqueInfoUpdate = true;
+			}
+
+			// Basically insert my special...
+			Main.npc[nextNPC].TypeName;
+			// ... for the Party Girl (Party Boy) and Santa Claus (Mrs. Claus), with translation keys of course
+
+			Main.npc[nextNPC].needsUniqueInfoUpdate = true; // should be added afterwards?
+		}
+
+		private void ChangeNPCTypeName(IL.Terraria.NPC.NewNPC newNPC, ILContext il) {
 			ILCursor c = new ILCursor(il);
 			if (!c.TryGotoNext(i => i.MatchRet())) return;
 			c.Emit(OpCodes.Ldarg_0);
