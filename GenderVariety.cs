@@ -6,6 +6,7 @@ using MonoMod.RuntimeDetour.HookGen;
 using System;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.GameContent;
 
 namespace GenderVariety
 {
@@ -21,14 +22,15 @@ namespace GenderVariety
 
 		public override void Load() {
 			townNPCList = new TownNPCSetup();
-			IL.Terraria.NPC.NewNPC += NPC_NewNPC;
-			IL_NPC_TypeName += ChangeNPCTypeName;
+			//IL.Terraria.NPC.NewNPC += NPC_NewNPC;
+			//IL_NPC_TypeName += ChangeNPCTypeName;
 
 			// Methods to use?
 			/// GiveTownUniqueDataToNPCsThatNeedIt <---- I think this is what I want!!
 			/// NewNPC
 			/// SpawnTownNPC
 		}
+		/*
 
 		// The method in question:
 		private static void GiveTownUniqueDataToNPCsThatNeedIt(int Type, int nextNPC) {
@@ -57,7 +59,7 @@ namespace GenderVariety
 					int index = GetNPCIndex(npc.type);
 					if (index == -1) return ogValue;
 					
-					if (townNPCList.npcIsAltGender[index]) {
+					if (townNPCList.IsAltGender(npc.type)) {
 						if (npc.type == NPCID.PartyGirl) return "Party Boy";
 						else if (npc.type == NPCID.SantaClaus) return "Mrs. Claus";
 					}
@@ -97,17 +99,16 @@ namespace GenderVariety
 			}
 			else Logger.Error("IL Error Fail"); //Log the error
 		}
+		*/
 
 		public override void Unload() {
 			for (int i = 0; i < townNPCList.townNPCs.Count; i++) {
 				TownNPCInfo townNPC = townNPCList.townNPCs[i]; // Reset the textures!
-				Main.npcTexture[townNPC.type] = townNPC.npcTexture;
-				Main.npcHeadTexture[townNPC.headIndex] = townNPC.npcTexture_Head;
+				TextureAssets.Npc[townNPC.type] = townNPC.GetOriginalNPCTexture();
+				TextureAssets.NpcHead[townNPC.headIndex] = townNPC.GetOriginalNPCHeadTexture();
 			}
 			townNPCList = null;
 		}
-		
-		public static int GetNPCIndex(int type) => townNPCList.townNPCs.FindIndex(x => x.type == type);
 
 		public static void SendDebugMessage(string message, Color color = default) {
 			if (ModContent.GetInstance<GVConfig>().EnableDebugMode) Main.NewText(message, color);

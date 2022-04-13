@@ -2,7 +2,6 @@
 using Terraria.ID;
 using Terraria;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria.Audio;
 
@@ -35,7 +34,10 @@ namespace GenderVariety
 
 		public override void ModifyTooltips(List<TooltipLine> tooltips) {
 			int index = tooltips.FindIndex(x => x.Name == "Damage" || x.Name == "Favorite");
-			if (index != -1) tooltips.Insert(index, new TooltipLine(ModContent.GetInstance<GenderVariety>(), "DebugItem", $"[i:{ItemID.MulticolorWrench}] [c/{Color.Wheat.Hex3()}:Debug Item] [i:{ItemID.MulticolorWrench}]"));
+			if (index != -1) {
+				string tooltip = $"[i:{ItemID.MulticolorWrench}] [c/{Color.Wheat.Hex3()}:Debug Item] [i:{ItemID.MulticolorWrench}]";
+				tooltips.Insert(index, new TooltipLine(Mod, "DebugItem", tooltip));
+			}
 		}
 	}
 
@@ -49,24 +51,29 @@ namespace GenderVariety
 			Projectile.width = 14;
 		}
 
-		public override bool? CanHitNPC(NPC target) => GenderVariety.GetNPCIndex(target.type) >= 0;
+		public override bool? CanHitNPC(NPC target) => GenderVariety.townNPCList.GetNPCIndex(target.type) != -1;
 
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-			int index = GenderVariety.GetNPCIndex(target.type);
-			if (index == -1) return;
+			int index = GenderVariety.townNPCList.GetNPCIndex(target.type);
+			if (index == -1) {
+				return;
+			}
+			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
+
+			int savedIndex = TownNPCWorld.SavedData.FindIndex(x => x.type == townNPC.type);
+			if (savedIndex == -1) {
+				return;
+			}
+			TownNPCData npcData = TownNPCWorld.SavedData[savedIndex];
+
 			GenderVariety.SendDebugMessage($"{target.FullName}({target.type}) was hit with Gender Change Water", Color.ForestGreen);
 
-			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			TownNPCData npcData = TownNPCWorld.SavedData[index];
-
-			int newGender = 0;
-			if (npcData.savedGender == TownNPCSetup.Unassigned) {
-				if (townNPC.ogGender == TownNPCSetup.Male) newGender = TownNPCSetup.Female;
-				else newGender = TownNPCSetup.Male;
+			Gender newGender;
+			if (npcData.savedGender == (int)Gender.Unassigned) {
+				newGender = townNPC.originalGender == Gender.Male ? Gender.Female : Gender.Male;
 			}
 			else {
-				if (npcData.savedGender == TownNPCSetup.Male) newGender = TownNPCSetup.Female;
-				if (npcData.savedGender == TownNPCSetup.Female) newGender = TownNPCSetup.Male;
+				newGender = npcData.savedGender == (int)Gender.Male ? Gender.Female : Gender.Male;
 			}
 			TownNPCData.AssignGender(target, newGender);
 		}
@@ -75,7 +82,7 @@ namespace GenderVariety
 			SoundEngine.PlaySound(SoundID.Shatter, (int)Projectile.position.X, (int)Projectile.position.Y);
 			for (int i = 0; i < 5; i++) {
 				// Broken glass
-				Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 13);
+				Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, DustID.Glass);
 			}
 			for (int j = 0; j < 30; j++) {
 				// Water Content

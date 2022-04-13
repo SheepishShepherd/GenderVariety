@@ -12,13 +12,10 @@ namespace GenderVariety
 
 		public override void OnWorldLoad()
 		{
-			//TODO: Save occurs during worldgen??
-			if (SavedData == null) {
-				SavedData = new List<TownNPCData>();
-				for (int i = 0; i < GenderVariety.townNPCList.townNPCs.Count; i++) {
-					TownNPCInfo list = GenderVariety.townNPCList.townNPCs[i];
-					SavedData.Add(new TownNPCData(list.type, TownNPCSetup.Unassigned, "", ""));
-				}
+			SavedData = new List<TownNPCData>();
+			for (int i = 0; i < GenderVariety.townNPCList.townNPCs.Count; i++) {
+				TownNPCInfo list = GenderVariety.townNPCList.townNPCs[i];
+				SavedData.Add(new TownNPCData(list.type, (int)Gender.Unassigned, "", ""));
 			}
 		}
 
@@ -29,7 +26,15 @@ namespace GenderVariety
 
 		public override void LoadWorldData(TagCompound tag)
 		{
-			SavedData = tag.Get<List<TownNPCData>>("SavedTownNPCData");
+			List<TownNPCData> temp = tag.Get<List<TownNPCData>>("SavedTownNPCData");
+			foreach (TownNPCData data in temp) {
+				int index = SavedData.FindIndex(x => x.type == data.type);
+				if (index == -1) {
+					SavedData.Add(data);
+					continue;
+				}
+				SavedData[index] = data;
+			}
 		}
 	}
 
@@ -38,17 +43,19 @@ namespace GenderVariety
 		public override void OnKill(NPC npc)
 		{
 			int index = GenderVariety.townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
-			if (index == -1) return;
-			TownNPCWorld.SavedData[index] = new TownNPCData(npc.type, TownNPCSetup.Unassigned, "", "");
+			if (index == -1) {
+				return;
+			}
+			TownNPCWorld.SavedData[index] = new TownNPCData(npc.type, (int)Gender.Unassigned, "", "");
 		}
 
 		// Swapped genders go to respective statues
 		public override bool? CanGoToStatue(NPC npc, bool toKingStatue)	
 		{
-			int index = GenderVariety.GetNPCIndex(npc.type);
-			if (index != -1 && npc.type != NPCID.SantaClaus && GenderVariety.townNPCList.npcIsAltGender[index]) {
+			int index = GenderVariety.townNPCList.GetNPCIndex(npc.type);
+			if (index != -1 && npc.type != NPCID.SantaClaus && GenderVariety.townNPCList.IsAltGender(npc.type)) {
 				TownNPCData npcData = TownNPCWorld.SavedData[index]; // Santa doesnt teleport in vanilla
-				return toKingStatue ? npcData.savedGender == TownNPCSetup.Female : npcData.savedGender == TownNPCSetup.Male; // Since we check for altGender, we do the opposite
+				return toKingStatue ? npcData.savedGender == (int)Gender.Female : npcData.savedGender == (int)Gender.Male;
 			}
 			return null;
 		}
@@ -63,8 +70,6 @@ namespace GenderVariety
 		{
 			// Setup textures when data is loaded
 			for (int i = 0; i < TownNPCWorld.SavedData.Count; i++) {
-				if (TownNPCWorld.SavedData[i].savedGender == TownNPCSetup.Unassigned) GenderVariety.townNPCList.npcIsAltGender[i] = false;
-				else GenderVariety.townNPCList.npcIsAltGender[i] = TownNPCWorld.SavedData[i].savedGender != GenderVariety.townNPCList.townNPCs[i].ogGender;
 				TownNPCData.SwapTextures(i, TownNPCWorld.SavedData[i].type);
 			}
 		}
