@@ -59,12 +59,7 @@ namespace GenderVariety
 				return;
 			}
 			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-
-			int savedIndex = TownNPCWorld.SavedData.FindIndex(x => x.type == townNPC.type);
-			if (savedIndex == -1) {
-				return;
-			}
-			TownNPCData npcData = TownNPCWorld.SavedData[savedIndex];
+			TownNPCData npcData = TownNPCWorld.SavedData[index];
 
 			GenderVariety.SendDebugMessage($"{target.FullName}({target.type}) was hit with Gender Change Water", Color.ForestGreen);
 

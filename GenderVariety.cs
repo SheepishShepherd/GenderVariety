@@ -1,17 +1,9 @@
-using Terraria.ID;
 using Microsoft.Xna.Framework;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using MonoMod.RuntimeDetour.HookGen;
-using System;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace GenderVariety
 {
-	// TODO: Check Multiplayer for issues
-
 	public class GenderVariety : Mod
 	{
 		internal static TownNPCSetup townNPCList;
@@ -22,96 +14,18 @@ namespace GenderVariety
 
 		public override void Load() {
 			townNPCList = new TownNPCSetup();
-			//IL.Terraria.NPC.NewNPC += NPC_NewNPC;
-			//IL_NPC_TypeName += ChangeNPCTypeName;
-
-			// Methods to use?
-			/// GiveTownUniqueDataToNPCsThatNeedIt <---- I think this is what I want!!
-			/// NewNPC
-			/// SpawnTownNPC
 		}
-		/*
-
-		// The method in question:
-		private static void GiveTownUniqueDataToNPCsThatNeedIt(int Type, int nextNPC) {
-			if (NPC.TypeToDefaultHeadIndex(Type) != -1 || Type == 453) {
-				Main.npc[nextNPC].GivenName = NPC.getNewNPCName(Type);
-				if (TownNPCProfiles.Instance.GetProfile(Type, out var profile)) {
-					Main.npc[nextNPC].townNpcVariationIndex = profile.RollVariation();
-					Main.npc[nextNPC].GivenName = profile.GetNameForVariant(Main.npc[nextNPC]);
-				}
-				Main.npc[nextNPC].needsUniqueInfoUpdate = true;
-			}
-
-			// Basically insert my special...
-			Main.npc[nextNPC].TypeName;
-			// ... for the Party Girl (Party Boy) and Santa Claus (Mrs. Claus), with translation keys of course
-
-			Main.npc[nextNPC].needsUniqueInfoUpdate = true; // should be added afterwards?
-		}
-
-		private void ChangeNPCTypeName(IL.Terraria.NPC.NewNPC newNPC, ILContext il) {
-			ILCursor c = new ILCursor(il);
-			if (!c.TryGotoNext(i => i.MatchRet())) return;
-			c.Emit(OpCodes.Ldarg_0);
-			c.EmitDelegate<Func<string, NPC, string>>(
-				delegate (string ogValue, NPC npc) {
-					int index = GetNPCIndex(npc.type);
-					if (index == -1) return ogValue;
-					
-					if (townNPCList.IsAltGender(npc.type)) {
-						if (npc.type == NPCID.PartyGirl) return "Party Boy";
-						else if (npc.type == NPCID.SantaClaus) return "Mrs. Claus";
-					}
-					return ogValue;
-				});
-		}
-
-		public static event ILContext.Manipulator IL_NPC_TypeName {
-			add {
-				HookEndpointManager.Modify(typeof(NPC).GetProperty(nameof(NPC.TypeName)).GetGetMethod(), value);
-			}
-			remove {
-				HookEndpointManager.Unmodify(typeof(NPC).GetProperty(nameof(NPC.TypeName)).GetGetMethod(), value);
-			}
-		}
-
-		private void NPC_NewNPC(ILContext il) {
-			ILCursor c = new ILCursor(il); //create the il cursor
-			c.Goto(0); //go to line 0
-			ILLabel wherestdve = null; //Hold a local varible with the il label
-
-			// find the if block that compares the values
-			if (c.TryGotoNext(i => i.MatchBlt(out _) && (i.Previous?.Match(OpCodes.Ldc_I4_0) == true) && (i.Previous?.Previous?.Match(OpCodes.Ldloc_0) == true)) &&
-				c.TryGotoNext(i => i.MatchBneUn(out wherestdve))) {
-				c.GotoLabel(wherestdve); // go to where the if block ends
-
-				c.Index += 8; //insert above it somehow works??? EDIT: Idk where it is but +8 seems to work
-				c.Emit(OpCodes.Ldloc_0); //Get the num param
-
-				//Emit delegate action code
-				c.EmitDelegate<Action<int>>(delegate (int num) {
-					//Code to insert/inject
-					NPC npc = Main.npc[num];
-					int index = townNPCList.townNPCs.FindIndex(x => x.type == npc.type);
-					if (index != -1) TownNPCData.AssignGender(npc);
-				});
-			}
-			else Logger.Error("IL Error Fail"); //Log the error
-		}
-		*/
 
 		public override void Unload() {
 			for (int i = 0; i < townNPCList.townNPCs.Count; i++) {
-				TownNPCInfo townNPC = townNPCList.townNPCs[i]; // Reset the textures!
-				TextureAssets.Npc[townNPC.type] = townNPC.GetOriginalNPCTexture();
-				TextureAssets.NpcHead[townNPC.headIndex] = townNPC.GetOriginalNPCHeadTexture();
+				TownNPCData.SwapHeadTexture(townNPCList.townNPCs[i].type, true);
 			}
 			townNPCList = null;
 		}
 
 		public static void SendDebugMessage(string message, Color color = default) {
-			if (ModContent.GetInstance<GVConfig>().EnableDebugMode) Main.NewText(message, color);
+			if (ModContent.GetInstance<GVConfig>().EnableDebugMode) 
+				Main.NewText(message, color);
 		}
 	}
 }

@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using Terraria.ModLoader.Config;
 
-
 namespace GenderVariety
 {
 	public class GVConfig : ModConfig
