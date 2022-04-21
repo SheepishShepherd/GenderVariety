@@ -1,5 +1,8 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace GenderVariety
@@ -17,8 +20,9 @@ namespace GenderVariety
 		}
 
 		public override void Unload() {
-			for (int i = 0; i < townNPCList.townNPCs.Count; i++) {
-				TownNPCData.SwapHeadTexture(townNPCList.townNPCs[i].type, true);
+			// Reset any NPC Head textures that may have be swapped.
+			for (int i = 0; i < TextureAssets.NpcHead.Length; i++) {
+				TextureAssets.NpcHead[i] = Main.Assets.Request<Texture2D>("Images/NPC_Head_" + i, AssetRequestMode.ImmediateLoad);
 			}
 			townNPCList = null;
 		}

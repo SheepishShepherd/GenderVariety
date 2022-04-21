@@ -166,22 +166,17 @@ namespace GenderVariety
 			SwapHeadTexture(npc.type);
 		}
 
-		internal static void SwapHeadTexture(int npcType, bool resetTexture = false) {
+		internal static void SwapHeadTexture(int npcType) {
 			int index = GenderVariety.townNPCList.GetNPCIndex(npcType);
 			if (index == -1) {
 				return;
 			}
 			TownNPCInfo townNPC = GenderVariety.townNPCList.townNPCs[index];
-			if (resetTexture) {
-				TextureAssets.NpcHead[townNPC.headIndex] = Main.Assets.Request<Texture2D>($"Images/NPC_Head_{townNPC.headIndex}", AssetRequestMode.ImmediateLoad);
+			if (GenderVariety.townNPCList.IsAltGender(npcType)) {
+				TextureAssets.NpcHead[townNPC.headIndex] = ModContent.Request<Texture2D>("GenderVariety/Resources/NPCHead/NPC_Head_" + townNPC.headIndex, AssetRequestMode.ImmediateLoad);
 			}
 			else {
-				if (GenderVariety.townNPCList.IsAltGender(npcType)) {
-					TextureAssets.NpcHead[townNPC.headIndex] = ModContent.Request<Texture2D>($"GenderVariety/Resources/NPCHead/NPC_Head_{townNPC.headIndex}", AssetRequestMode.ImmediateLoad);
-				}
-				else {
-					TextureAssets.NpcHead[townNPC.headIndex] = Main.Assets.Request<Texture2D>($"Images/NPC_Head_{townNPC.headIndex}", AssetRequestMode.ImmediateLoad);
-				}
+				TextureAssets.NpcHead[townNPC.headIndex] = Main.Assets.Request<Texture2D>("Images/NPC_Head_" + townNPC.headIndex, AssetRequestMode.ImmediateLoad);
 			}
 		}
 
