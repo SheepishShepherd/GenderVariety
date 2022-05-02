@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -11,51 +10,42 @@ namespace GenderVariety
 	{
 		public int RollVariation() => 0;
 
-		public string GetNameForVariant(NPC npc) {
-			// If the NPC has the alternate gender, use the new name list
-			if (GenderVariety.townNPCList.IsAltGender(npc.type) && TownNPCData.AltNames.TryGetValue(npc.type, out List<string> names)) {
-				return names[Main.rand.Next(names.Count - 1)];
-			}
-			return npc.getNewNPCName();
-		}
+		public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
+
+		public int GetHeadTextureIndex(NPC npc) => GenderVariety.townNPCList.GetNPCInfo(npc.type).headIndex;
 
 		public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) {
-			TownNPCInfo info = GenderVariety.townNPCList.townNPCs[GenderVariety.townNPCList.GetNPCIndex(npc.type)];
+			TownNPCInfo info = GenderVariety.townNPCList.GetNPCInfo(npc.type);
 			if (GenderVariety.townNPCList.IsAltGender(npc.type)) {
 				if (npc.IsABestiaryIconDummy && !npc.ForcePartyHatOn)
-					return ModContent.Request<Texture2D>("GenderVariety/Resources/NPC/NPC_" + npc.type + "_Default", AssetRequestMode.ImmediateLoad);
+					return ModContent.Request<Texture2D>(info.defaultPath_Alt);
 
-				if (npc.altTexture == 1 && !string.IsNullOrEmpty(info.partyPath))
-					return ModContent.Request<Texture2D>("GenderVariety/Resources/NPC/NPC_" + npc.type + "_Party", AssetRequestMode.ImmediateLoad);
+				if (npc.altTexture == 1 && !string.IsNullOrEmpty(info.partyPath_Alt))
+					return ModContent.Request<Texture2D>(info.partyPath_Alt);
 
-				if (npc.altTexture == 2 && !string.IsNullOrEmpty(info.transformedPath))
-					return ModContent.Request<Texture2D>("GenderVariety/Resources/NPC/NPC_" + npc.type + "_Transformed", AssetRequestMode.ImmediateLoad);
+				if (npc.altTexture == 2 && !string.IsNullOrEmpty(info.transformedPath_Alt))
+					return ModContent.Request<Texture2D>(info.transformedPath_Alt);
 
-				if (npc.altTexture == 3 && !string.IsNullOrEmpty(info.creditsPath))
-					return ModContent.Request<Texture2D>("GenderVariety/Resources/NPC/NPC_" + npc.type + "_Credits", AssetRequestMode.ImmediateLoad);
+				if (npc.altTexture == 3 && !string.IsNullOrEmpty(info.creditsPath_Alt))
+					return ModContent.Request<Texture2D>(info.creditsPath_Alt);
 
-				return ModContent.Request<Texture2D>("GenderVariety/Resources/NPC/NPC_" + npc.type + "_Default", AssetRequestMode.ImmediateLoad);
+				return ModContent.Request<Texture2D>(info.defaultPath_Alt);
 			}
 			else {
 				if (npc.IsABestiaryIconDummy && !npc.ForcePartyHatOn)
-					return Main.Assets.Request<Texture2D>("Images/" + info.defaultPath, AssetRequestMode.ImmediateLoad);
+					return Main.Assets.Request<Texture2D>(info.defaultPath);
 
 				if (npc.altTexture == 1 && !string.IsNullOrEmpty(info.partyPath))
-						return Main.Assets.Request<Texture2D>("Images/" + info.partyPath, AssetRequestMode.ImmediateLoad);
+						return Main.Assets.Request<Texture2D>(info.partyPath);
 
 				if (npc.altTexture == 2 && !string.IsNullOrEmpty(info.transformedPath))
-					return Main.Assets.Request<Texture2D>("Images/" + info.transformedPath, AssetRequestMode.ImmediateLoad);
+					return Main.Assets.Request<Texture2D>(info.transformedPath);
 
 				if (npc.altTexture == 3 && !string.IsNullOrEmpty(info.creditsPath))
-					return Main.Assets.Request<Texture2D>("Images/" + info.creditsPath, AssetRequestMode.ImmediateLoad);
+					return Main.Assets.Request<Texture2D>(info.creditsPath);
 
-				return Main.Assets.Request<Texture2D>("Images/" + info.defaultPath, AssetRequestMode.ImmediateLoad);
+				return Main.Assets.Request<Texture2D>(info.defaultPath);
 			}
-		}
-
-		public int GetHeadTextureIndex(NPC npc) {
-			TownNPCSetup setup = GenderVariety.townNPCList;
-			return setup.townNPCs[setup.GetNPCIndex(npc.type)].headIndex;
 		}
 	}
 }

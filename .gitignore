@@ -9,3 +9,4 @@
 *.mdp
 workshop.json
 /bin/Debug/
+/Resources/Unused
