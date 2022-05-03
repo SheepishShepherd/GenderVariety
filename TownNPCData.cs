@@ -21,27 +21,50 @@ namespace GenderVariety
 		internal string transformedPath_Alt;
 		internal string creditsPath_Alt;
 
-		internal TownNPCInfo(int type, int headIndex, Gender originalGender, string defaultPath, string partyPath = "noPath") {
+		internal TownNPCInfo(int type, int headIndex, Gender originalGender, string defaultPath) {
 			this.type = type;
 			this.headIndex = headIndex;
 			this.originalGender = originalGender;
 
-			this.defaultPath = ModContent.HasAsset($"Terraria/Images/" + defaultPath) ? "Images/" + defaultPath : null;
-			this.partyPath = ModContent.HasAsset("Terraria/Images/" + partyPath) ? "Images/" + partyPath : null;
-			transformedPath = type == NPCID.BestiaryGirl ? "Images/TownNPCs/BestiaryGirl_Default_Transformed" : null;
-			creditsPath = type == NPCID.BestiaryGirl ? "Images/TownNPCs/BestiaryGirl_Default_Credits" : null;
+			// Define vanilla texture paths
+			this.defaultPath = ValidateVanillaPath(defaultPath);
+			partyPath = ValidateVanillaPath(defaultPath, "_Party");
+			transformedPath = ValidateVanillaPath(defaultPath, "_Transformed");
+			creditsPath = ValidateVanillaPath(defaultPath, "_Credits");
 
-			defaultPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Default";
-			if (!string.IsNullOrEmpty(this.partyPath)) {
-				defaultPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Party";
+			// Define alternate texture paths
+			defaultPath_Alt = ValidateModdedPath("GenderVariety/Resources/NPC/" + type + "_Default");
+			if (!string.IsNullOrEmpty(partyPath)) {
+				partyPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Party";
 			}
 			if (!string.IsNullOrEmpty(transformedPath)) {
-				defaultPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Transformed";
+				transformedPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Transformed";
 			}
 			if (!string.IsNullOrEmpty(creditsPath)) {
-				defaultPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Credits";
+				creditsPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Credits";
 			}
 		}
+
+		// TODO: TownNPCInfo for modded town npcs?
+		/*
+		internal TownNPCInfo(int type, Gender originalGender, string defaultPath, string altPath) {
+			this.type = type;
+			this.headIndex = NPCHeadLoader.GetHeadSlot(ModContent.GetModNPC(type).HeadTexture);
+			this.originalGender = originalGender;
+		}
+		*/
+
+
+		// Make sure the path provided has an existing texture associated with it
+		// The result will be using Main.Assets.Requst<Texture2D>(), so remove the 'Terraria/' bit
+		string ValidateVanillaPath(string texturePath, string extension = "") {
+			if (ModContent.HasAsset("Terraria/Images/" + texturePath + extension)) {
+				return "Images/" + texturePath + extension;
+			}
+			return null;
+		}
+
+		string ValidateModdedPath(string texturePath) => ModContent.HasAsset(texturePath) ? texturePath : null;
 	}
 
 	internal class TownNPCSetup
@@ -55,36 +78,36 @@ namespace GenderVariety
 
 		private void InitializeTownNPCList() {
 			townNPCs = new List<TownNPCInfo>() {
-				// Ordered by wiki
+				// Ordered by NPCHeadID (Mostly in order by NPCID, with the exception of the Guide being first)
 				new TownNPCInfo(NPCID.Guide, NPCHeadID.Guide, Gender.Male, "NPC_22"),
-				new TownNPCInfo(NPCID.Merchant, NPCHeadID.Merchant, Gender.Male, "TownNPCs/Merchant_Default", "TownNPCs/Merchant_Default_Party"),
-				new TownNPCInfo(NPCID.Nurse, NPCHeadID.Nurse, Gender.Female, "TownNPCs/Nurse_Default", "TownNPCs/Nurse_Default_Party"),
-				new TownNPCInfo(NPCID.Demolitionist, NPCHeadID.Demolitionist, Gender.Male, "TownNPCs/Demolitionist_Default", "TownNPCs/Demolitionist_Default_Party"),
-				new TownNPCInfo(NPCID.DyeTrader, NPCHeadID.DyeTrader, Gender.Male, "TownNPCs/DyeTrader_Default", "TownNPCs/DyeTrader_Default_Party"),
-				new TownNPCInfo(NPCID.Angler, NPCHeadID.Angler, Gender.Male, "TownNPCs/Angler_Default", "TownNPCs/Angler_Default_Party"),
-				new TownNPCInfo(NPCID.BestiaryGirl, NPCHeadID.BestiaryGirl, Gender.Female, "TownNPCs/BestiaryGirl_Default", "TownNPCs/BestiaryGirl_Default_Party"),
+				new TownNPCInfo(NPCID.Merchant, NPCHeadID.Merchant, Gender.Male, "TownNPCs/Merchant_Default"),
+				new TownNPCInfo(NPCID.Nurse, NPCHeadID.Nurse, Gender.Female, "TownNPCs/Nurse_Default"),
+				new TownNPCInfo(NPCID.Demolitionist, NPCHeadID.Demolitionist, Gender.Male, "TownNPCs/Demolitionist_Default"),
 				new TownNPCInfo(NPCID.Dryad, NPCHeadID.Dryad, Gender.Female, "NPC_20"),
-				new TownNPCInfo(NPCID.Painter, NPCHeadID.Painter, Gender.Male, "TownNPCs/Painter_Default", "TownNPCs/Painter_Default_Party"),
-				new TownNPCInfo(NPCID.Golfer, NPCHeadID.Golfer, Gender.Male, "TownNPCs/Golfer_Default", "TownNPCs/Golfer_Default_Party"),
 				new TownNPCInfo(NPCID.ArmsDealer, NPCHeadID.ArmsDealer, Gender.Male, "NPC_19"),
-				//TownNPCInfo.AddTownNPC(NPCID.DD2Bartender, 24, true),
-				new TownNPCInfo(NPCID.Stylist, NPCHeadID.Stylist, Gender.Female, "TownNPCs/Stylist_Default", "TownNPCs/Stylist_Default_Party"),
+				new TownNPCInfo(NPCID.Clothier, NPCHeadID.Clothier, Gender.Male, "TownNPCs/Clothier_Default"),
+				new TownNPCInfo(NPCID.Mechanic, NPCHeadID.Mechanic, Gender.Female, "TownNPCs/Mechanic_Default"),
 				new TownNPCInfo(NPCID.GoblinTinkerer, NPCHeadID.GoblinTinkerer, Gender.Male, "NPC_107"),
-				//TownNPCInfo.AddTownNPC(NPCID.WitchDoctor, 18, true),
-				new TownNPCInfo(NPCID.Clothier, NPCHeadID.Clothier, Gender.Male, "TownNPCs/Clothier_Default", "TownNPCs/Clothier_Default_Party"),
-				new TownNPCInfo(NPCID.Mechanic, NPCHeadID.Mechanic, Gender.Female, "TownNPCs/Mechanic_Default", "TownNPCs/Mechanic_Default_Party"),
-				new TownNPCInfo(NPCID.PartyGirl, NPCHeadID.PartyGirl, Gender.Female, "NPC_208"),
-
-				new TownNPCInfo(NPCID.Wizard, NPCHeadID.Wizard, Gender.Male, "TownNPCs/Wizard_Default", "TownNPCs/Wizard_Default_Party"),
-				//TownNPCInfo.AddTownNPC(NPCID.TaxCollector, 23, true),
+				new TownNPCInfo(NPCID.Wizard, NPCHeadID.Wizard, Gender.Male, "TownNPCs/Wizard_Default"),
+				new TownNPCInfo(NPCID.SantaClaus, NPCHeadID.SantaClaus, Gender.Male, "TownNPCs/Santa_Default"),
 				new TownNPCInfo(NPCID.Truffle, NPCHeadID.Truffle, Gender.Male, "NPC_160"),
-				new TownNPCInfo(NPCID.Pirate, NPCHeadID.Pirate, Gender.Male, "TownNPCs/Pirate_Default", "TownNPCs/Pirate_Default_Party"),
-				new TownNPCInfo(NPCID.Steampunker, NPCHeadID.Steampunker, Gender.Female, "TownNPCs/Steampunker_Default", "TownNPCs/Steampunker_Default_Party"),
-				new TownNPCInfo(NPCID.Cyborg, NPCHeadID.Cyborg, Gender.Male, "TownNPCs/Cyborg_Default", "TownNPCs/Cyborg_Default_Party"),
-				new TownNPCInfo(NPCID.SantaClaus, NPCHeadID.SantaClaus, Gender.Male, "TownNPCs/Santa_Default", "TownNPCs/Santa_Default_Party"),
-				//new TownNPCInfo(NPCID.Princess, NPCHeadID.Princess, Gender.Female, "TownNPCs/Princess_Default", "TownNPCs/Princess_Default_Party"),
-
-				//TownNPCInfo.AddTownNPC(NPCID.TravellingMerchant, 21, true),
+				new TownNPCInfo(NPCID.Steampunker, NPCHeadID.Steampunker, Gender.Female, "TownNPCs/Steampunker_Default"),
+				new TownNPCInfo(NPCID.DyeTrader, NPCHeadID.DyeTrader, Gender.Male, "TownNPCs/DyeTrader_Default"),
+				new TownNPCInfo(NPCID.PartyGirl, NPCHeadID.PartyGirl, Gender.Female, "NPC_208"),
+				new TownNPCInfo(NPCID.Cyborg, NPCHeadID.Cyborg, Gender.Male, "TownNPCs/Cyborg_Default"),
+				new TownNPCInfo(NPCID.Painter, NPCHeadID.Painter, Gender.Male, "TownNPCs/Painter_Default"),
+				new TownNPCInfo(NPCID.WitchDoctor, NPCHeadID.WitchDoctor, Gender.Male, "NPC_228"),
+				new TownNPCInfo(NPCID.Pirate, NPCHeadID.Pirate, Gender.Male, "TownNPCs/Pirate_Default"),
+				new TownNPCInfo(NPCID.Stylist, NPCHeadID.Stylist, Gender.Female, "TownNPCs/Stylist_Default"),
+				// There is an additional condition where the Traveling merchant can despawn
+				// Until I figure out how I can easily approach this, the traveling merchant will not be affected
+				//new TownNPCInfo(NPCID.TravellingMerchant, NPCHeadID.TravellingMerchant, Gender.Male, "TownNPCs/TravelingMerchant_Default"),
+				new TownNPCInfo(NPCID.Angler, NPCHeadID.Angler, Gender.Male, "TownNPCs/Angler_Default"),
+				new TownNPCInfo(NPCID.TaxCollector, NPCHeadID.TaxCollector, Gender.Male, "TownNPCs/TaxCollector_Default"),
+				new TownNPCInfo(NPCID.DD2Bartender, NPCHeadID.DD2Bartender, Gender.Male, "NPC_550"),
+				new TownNPCInfo(NPCID.Golfer, NPCHeadID.Golfer, Gender.Male, "TownNPCs/Golfer_Default"),
+				new TownNPCInfo(NPCID.BestiaryGirl, NPCHeadID.BestiaryGirl, Gender.Female, "TownNPCs/BestiaryGirl_Default"),
+				new TownNPCInfo(NPCID.Princess, NPCHeadID.Princess, Gender.Female, "TownNPCs/Princess_Default"),
 			};
 		}
 
@@ -93,18 +116,14 @@ namespace GenderVariety
 		internal TownNPCInfo GetNPCInfo(int npcType) => townNPCs[GetNPCIndex(npcType)];
 
 		internal bool IsAltGender(int npcType) {
-			// If the index is invalid, the gender can't be the alternate.
-			int index = GenderVariety.townNPCList.GetNPCIndex(npcType);
-			if (index == -1) {
-				return false;
-			}
-			if (TownNPCWorld.SavedGenders is null) {
+			// If the index is invalid, the gender can't be the alternate
+			if (TownNPCWorld.SavedGenders is null || GenderVariety.townNPCList.GetNPCIndex(npcType) == -1) {
 				return false;
 			}
 
 			if (TownNPCWorld.SavedGenders.TryGetValue(new NPCDefinition(npcType), out Gender savedGender)) {
 				Gender originalGender = GenderVariety.townNPCList.GetNPCInfo(npcType).originalGender;
-				return savedGender == Gender.Unassigned ? false : savedGender != originalGender;
+				return savedGender != Gender.Unassigned && savedGender != originalGender;
 			}
 
 			return false;

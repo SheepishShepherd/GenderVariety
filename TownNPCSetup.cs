@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -40,12 +39,9 @@ namespace GenderVariety
 			// Loot through all NPCs that have been flagged for an alternate gender during world gen
 			// Assign the genders for them after SavedGenders is initialized
 			foreach (NPC npc in AltGenderWorldGen) {
-				if (GenderVariety.townNPCList.GetNPCInfo(npc.type).originalGender == Gender.Male) {
-					TownNPCs.AssignGender(npc, Gender.Female);
-				}
-				else {
-					TownNPCs.AssignGender(npc, Gender.Male);
-				}
+				Gender originalGender = GenderVariety.townNPCList.GetNPCInfo(npc.type).originalGender;
+				Gender newGender = originalGender == Gender.Male ? Gender.Female : Gender.Male;
+				TownNPCs.AssignGender(npc, newGender);
 			}
 		}
 
@@ -114,11 +110,11 @@ namespace GenderVariety
 			// Main.rand.NextBool gives us a 50% chance to apply the alternate gender.
 			// If successful, we add the npc to a list to Assign the gender when we have the Saved Genders loaded.
 			for (int i = 0; i < Main.maxNPCs; i++) {
-				int type = Main.npc[i].type;
-				if (GenderVariety.townNPCList.GetNPCIndex(type) == -1)
+				int id = Main.npc[i].type;
+				if (GenderVariety.townNPCList.GetNPCIndex(id) == -1)
 					continue;
 
-				if (GenderVariety.townNPCList.GetNPCInfo(type).originalGender != TownNPCs.RandomizeSpawnGender(type)) {
+				if (GenderVariety.townNPCList.GetNPCInfo(id).originalGender != TownNPCs.RandomizeSpawnGender(id)) {
 					TownNPCWorld.AltGenderWorldGen.Add(Main.npc[i]);
 				}
 			}
@@ -135,7 +131,7 @@ namespace GenderVariety
 		}
 
 		public override void ModifyNPCNameList(NPC npc, List<string> nameList) {
-			if (TownNPCWorld.SavedGenders is not null && GenderVariety.townNPCList.IsAltGender(npc.type)) {
+			if (GenderVariety.townNPCList.IsAltGender(npc.type)) {
 				if (AltNames.TryGetValue(npc.type, out List<string> altNames)) {
 					nameList = altNames;
 				}
@@ -143,7 +139,7 @@ namespace GenderVariety
 		}
 
 		public override void ModifyTypeName(NPC npc, ref string typeName) {
-			if (TownNPCWorld.SavedGenders is not null && GenderVariety.townNPCList.IsAltGender(npc.type)) {
+			if (GenderVariety.townNPCList.IsAltGender(npc.type)) {
 				if (npc.type == NPCID.PartyGirl) {
 					typeName = "Party Boy"; // TODO: Translations
 				}
@@ -159,7 +155,7 @@ namespace GenderVariety
 		public override void OnKill(NPC npc) {
 			// When a Town NPC dies, we will randomize the gender for the next spawn
 			if (TownNPCWorld.SavedGenders.TryGetValue(new NPCDefinition(npc.type), out Gender gender)) {
-				gender = TownNPCs.RandomizeSpawnGender(npc.type);
+				gender = RandomizeSpawnGender(npc.type);
 			}
 		}
 
@@ -197,8 +193,9 @@ namespace GenderVariety
 
 		internal static void AssignGender(NPC npc, Gender setGender = Gender.Unassigned) {
 			int index = GenderVariety.townNPCList.GetNPCIndex(npc.type);
+			string npcIdentity = $"{npc.FullName} [{npc.type}]";
 			if (index == -1) {
-				GenderVariety.SendDebugMessage($"{npc.TypeName}({npc.type}) is not a valid NPC for gender changing.", Color.IndianRed);
+				GenderVariety.SendDebugMessage($"{npcIdentity} is not a valid NPC for gender changing.", Color.IndianRed);
 				return;
 			}
 
@@ -206,26 +203,13 @@ namespace GenderVariety
 			Gender savedGender = TownNPCWorld.SavedGenders[npcDef];
 			// If we aren't setting a gender manually, go through the OnSpawn process
 			if (setGender == Gender.Unassigned) {
-				if (savedGender != Gender.Unassigned) {
-					setGender = savedGender;
-				}
-				else {
-					if (ModContent.GetInstance<GVConfig>().ForcedMale.Any(x => x.Type == npc.type)) {
-						setGender = Gender.Male;
-					}
-					else if (ModContent.GetInstance<GVConfig>().ForcedFemale.Any(x => x.Type == npc.type)) {
-						setGender = Gender.Female;
-					}
-					else {
-						setGender = Main.rand.NextBool() ? Gender.Male : Gender.Female;
-					}
-				}
+				setGender = savedGender != Gender.Unassigned ? savedGender : RandomizeSpawnGender(npc.type);
 			}
 
 			// Debug Message
 			string oldGender = (int)savedGender == 0 ? "Unassigned" : (int)savedGender == 1 ? "Male" : "Female";
-			string newGender = setGender == Gender.Unassigned ? "Unassigned" : setGender == Gender.Male ? "Male" : "Female";
-			GenderVariety.SendDebugMessage($"The {npc.TypeName}({npc.type}) is now a {newGender} (previously {oldGender})", Color.MediumPurple);
+			string newGender = setGender == Gender.Male ? "Male" : "Female";
+			GenderVariety.SendDebugMessage($"{npcIdentity} changed from {oldGender} to {newGender}", Color.MediumPurple);
 
 			// Update name (texture changes update in PreAI)
 			TownNPCWorld.SavedGenders[npcDef] = setGender;
@@ -237,10 +221,12 @@ namespace GenderVariety
 
 			Asset<Texture2D> texture;
 			if (GenderVariety.townNPCList.IsAltGender(npcType)) {
-				texture = ModContent.Request<Texture2D>("GenderVariety/Resources/Head/" + townNPC.headIndex, AssetRequestMode.ImmediateLoad);
+				string path = "GenderVariety/Resources/Head/" + townNPC.headIndex;
+				texture = ModContent.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad);
 			}
 			else {
-				texture = Main.Assets.Request<Texture2D>("Images/NPC_Head_" + townNPC.headIndex, AssetRequestMode.ImmediateLoad);
+				string path = "Images/NPC_Head_" + townNPC.headIndex;
+				texture = Main.Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad);
 			}
 			TextureAssets.NpcHead[townNPC.headIndex] = texture;
 		}
