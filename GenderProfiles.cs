@@ -36,7 +36,7 @@ namespace GenderVariety
 					return Main.Assets.Request<Texture2D>(info.defaultPath);
 
 				if (npc.altTexture == 1 && !string.IsNullOrEmpty(info.partyPath))
-						return Main.Assets.Request<Texture2D>(info.partyPath);
+					return Main.Assets.Request<Texture2D>(info.partyPath);
 
 				if (npc.altTexture == 2 && !string.IsNullOrEmpty(info.transformedPath))
 					return Main.Assets.Request<Texture2D>(info.transformedPath);

@@ -124,17 +124,12 @@ namespace GenderVariety
 	public class TownNPCs : GlobalNPC
 	{
 		public override ITownNPCProfile ModifyTownNPCProfile(NPC npc) {
-			if (GenderVariety.townNPCList.GetNPCIndex(npc.type) != -1) {
-				return new GenderProfile();
-			}
-			return null;
+			return GenderVariety.townNPCList.GetNPCIndex(npc.type) != -1 ? new GenderProfile() : null;
 		}
 
 		public override void ModifyNPCNameList(NPC npc, List<string> nameList) {
-			if (GenderVariety.townNPCList.IsAltGender(npc.type)) {
-				if (AltNames.TryGetValue(npc.type, out List<string> altNames)) {
-					nameList = altNames;
-				}
+			if (GenderVariety.townNPCList.IsAltGender(npc.type) && AltNames.TryGetValue(npc.type, out List<string> altNames)) {
+				nameList = altNames;
 			}
 		}
 

@@ -35,13 +35,13 @@ namespace GenderVariety
 			// Define alternate texture paths
 			defaultPath_Alt = ValidateModdedPath("GenderVariety/Resources/NPC/" + type + "_Default");
 			if (!string.IsNullOrEmpty(partyPath)) {
-				partyPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Party";
+				partyPath_Alt = ValidateModdedPath("GenderVariety/Resources/NPC/" + type + "_Party");
 			}
 			if (!string.IsNullOrEmpty(transformedPath)) {
-				transformedPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Transformed";
+				transformedPath_Alt = ValidateModdedPath("GenderVariety/Resources/NPC/" + type + "_Transformed");
 			}
 			if (!string.IsNullOrEmpty(creditsPath)) {
-				creditsPath_Alt = "GenderVariety/Resources/NPC/" + type + "_Credits";
+				creditsPath_Alt = ValidateModdedPath("GenderVariety/Resources/NPC/" + type + "_Credits");
 			}
 		}
 
