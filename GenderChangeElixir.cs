@@ -83,7 +83,7 @@ namespace GenderVariety
 
 		public override void Kill(int timeLeft) {
 			// Play a glass shatter sound
-			SoundEngine.PlaySound(SoundID.Shatter, (int)Projectile.position.X, (int)Projectile.position.Y);
+			SoundEngine.PlaySound(SoundID.Shatter, Projectile.position);
 
 			// Create dust of broken glass
 			for (int i = 0; i < 5; i++) {
