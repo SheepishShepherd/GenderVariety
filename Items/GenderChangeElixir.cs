@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;
 
-namespace GenderVariety
+namespace GenderVariety.Items
 {
 	public class GenderChangeElixir : ModItem
 	{
@@ -96,7 +96,7 @@ namespace GenderVariety
 				// Water Content
 				short purple = j % 2 == 0 || j > 10 ? DustID.Water_Corruption : DustID.Water_Snow;
 				int newDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, purple, 0f, -2f);
-				
+
 				Main.dust[newDust].alpha = 100;
 				ref float x = ref Main.dust[newDust].velocity.X;
 				x *= 1.5f;
